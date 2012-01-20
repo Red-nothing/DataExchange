@@ -1,0 +1,6 @@
+Aktuelle Version :
+- ExportSchema erstellen von Tabellen. Mit ienem einfachen Klick alle konfigruierten Daten einer Tabelle als CSV exportieren.
+
+
+Abhaengigkeiten :
+- CsvWriter
