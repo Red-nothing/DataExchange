@@ -116,9 +116,14 @@ $GLOBALS['TL_DCA']['tl_dataexchange_config'] = array
 
 	'palettes'	=> array
 	(
-		'__selector__' 	=> array('exportType'),
-		'default' => '{areaDefault_legend},name,tableName,exportType;{areaExport_legend},prependString,storeDir',
-		'csv' => '{areaDefault_legend},name,tableName,exportType,exportRAW;{areaExport_CSV_legend},includeHeader,exportCSVSeparator;{areaExport_legend},prependString,storeDir'
+		'__selector__' 	=> array('exportType','addExportInDCA','exportToFile'),
+		'default' => '{areaDefault_legend},name,tableName,addExportInDCA,exportType;{areaExport_legend},exportToFile',
+		'csv' => '{areaDefault_legend},name,tableName,addExportInDCA,exportType,exportRAW;{areaExport_CSV_legend},includeHeader,exportCSVSeparator;{areaExport_legend},exportToFile'
+	),
+	'subpalettes'	=> array
+	(
+		'addExportInDCA' => 'addExportInDCAName',
+		'exportToFile'  => 'prependString,storeDir'
 	),
 	
 	// Fields
@@ -149,6 +154,29 @@ $GLOBALS['TL_DCA']['tl_dataexchange_config'] = array
 			'options'				=> array_keys($GLOBALS['DataExchangeProvider']['export']),
 			'reference'				=> &$GLOBALS['TL_LANG']['tl_dataexchange_config']['DataExchangeProvider']['export'],
 			'eval'					=> array('submitOnChange'=>true)
+		),
+		
+		
+		'exportToFile' => array
+		(
+			'label'                   => &$GLOBALS['TL_LANG']['tl_dataexchange_config']['exportToFile'],
+			'exclude'                 => true,
+			'inputType'               => 'checkbox',
+			'eval'                    => array('submitOnChange'=>true)
+		),
+		'addExportInDCA' => array
+		(
+			'label'                   => &$GLOBALS['TL_LANG']['tl_dataexchange_config']['addExportInDCA'],
+			'exclude'                 => true,
+			'inputType'               => 'checkbox',
+			'eval'                    => array('submitOnChange'=>true)
+		),
+		'addExportInDCAName' => array
+		(
+			'label'                   => &$GLOBALS['TL_LANG']['tl_dataexchange_config']['addExportInDCAName'],
+			'exclude'                 => true,
+			'inputType'               => 'text',
+			'eval'                    => array('mandatory'=>true)
 		),
 		'includeHeader' => array
 		(
@@ -195,11 +223,20 @@ class tl_dataexchange_config extends Backend
 
 	public function getRowLabel($row, $label, $dc)
 	{
+		
 		$objFields = $this->Database->prepare("SELECT dcaField FROM tl_dataexchange_fields WHERE pid=? AND enabled=1 ORDER BY sorting")->execute($row['id']);
 
+		
+		$arrFields = array();
+		
+		while ($objFields->next())
+		{
+			$arrFields[] = $objFields->dcaField;
+		}
+		  
 		return '
 <div class="limit_height' . (!$GLOBALS['TL_CONFIG']['doNotCollapse'] ? ' h32' : '') . ' block">
-<span class="name">'.$label . implode(", ",$objFields->fetchEach('dcaField')) . '</span>
+  		<span class="name">'.$label. implode(", ",$arrFields) . '</span>
 </div>';
 	}
 	
