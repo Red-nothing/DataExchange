@@ -19,3 +19,11 @@ $GLOBALS['TL_LANG']['tl_dataexchange_config']['storeDir'] = array("Store dir","S
 
 $GLOBALS['TL_LANG']['tl_dataexchange_config']['includeHeader'] = array("Include header","Should be a header added");
 $GLOBALS['TL_LANG']['tl_dataexchange_config']['exportRAW'] = array("Export in RAW format","Do not resolve foreign tables");
+
+
+
+$GLOBALS['TL_LANG']['tl_dataexchange_config']['DataExchangeProvider']['export'] = array("Exchange Provider","");
+$GLOBALS['TL_LANG']['tl_dataexchange_config']['exportToFile'] = array("Export to file","");
+$GLOBALS['TL_LANG']['tl_dataexchange_config']['addExportInDCA'] = array("Add global operation Link","");
+$GLOBALS['TL_LANG']['tl_dataexchange_config']['addExportInDCAName'] = array("Link text","");
+$GLOBALS['TL_LANG']['tl_dataexchange_config']['exportCSVSeparator'] = array("CSV separator","");

@@ -4,7 +4,7 @@ class DataExchange extends Controller
 {
 	protected $strDCA;
 	protected $separator;
-		protected $arrData = array();
+	protected $arrData = array();
 	
 	
 	public function __construct($strDCA,$strName,$bGenerateBEConfig)
@@ -51,6 +51,9 @@ class DataExchange extends Controller
 		$objExportFile->content = $arrData;
 		$objExportFile->saveToFile($strFile);
 	}
+	
+	
+	
 	
 }
 

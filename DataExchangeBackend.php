@@ -7,6 +7,14 @@ class DataExchangeBackend extends Backend
 	public function exportTable(DataContainer $dc)
 	{
 		
+		$exportID = $dc->id;
+		
+		if ($this->Input->get("return"))
+		{
+			$exportID = $this->Input->get("id");
+		}
+		
+		
 		$objDataExchangeConfig = $this->Database->prepare("SELECT * FROM tl_dataexchange_config WHERE id=?")
 								   ->limit(1)
 								   ->execute($dc->id);
@@ -115,10 +123,45 @@ class DataExchangeBackend extends Backend
 		
 		
 		$objExportFile->content = $arrData;
-		$objExportFile->saveToFile(sprintf("%s/%s%s.csv",$strStoreDir,
+		
+		if ($objDataExchangeConfig->exportToFile)
+		{		
+			$objExportFile->saveToFile(sprintf("%s/%s%s.csv",$strStoreDir,
 							$this->replaceInsertTags($objDataExchangeConfig->prependString),
 							$objDataExchangeConfig->tableName));
-		$this->redirect("contao/main.php?do=dataexchange_config");
+		}
+		else
+		{
+			$objExportFile->saveToBrowser();
+				
+		}
+		
+		
+		if ($this->Input->get("return"))
+		{
+			$this->redirect("contao/main.php?do=".$this->Input->get("return"));
+		}
+		else
+		{
+			$this->redirect("contao/main.php?do=dataexchange_config");
+		}
 	}
 
+
+
+	
+	public function loadDataContainerHook($strName)
+	{
+		$objDBExport = $this->Database->prepare("SELECT * FROM tl_dataexchange_config WHERE tableName=? AND addExportInDCA='1'")->execute($strName);
+		
+		while ($objDBExport->next())
+		{
+			$GLOBALS['TL_DCA'][$objDBExport->tableName]['list']['global_operations']['export_'.$objDBExport->id] = array
+			(
+				'label'               => $objDBExport->addExportInDCAName,
+				'href'                => 'do=dataexchange_config&amp;key=export&amp;id='.$objDBExport->id.'&amp;return='.$this->Input->get("do"),
+			);
+		}
+	}
+	
 }
