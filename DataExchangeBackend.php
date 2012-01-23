@@ -185,7 +185,8 @@ class DataExchangeBackend extends Backend
 			$GLOBALS['TL_DCA'][$objDBExport->tableName]['list']['global_operations']['export_'.$objDBExport->id] = array
 			(
 				'label'               => $objDBExport->addExportInDCAName,
-				'href'                => 'do=dataexchange_config&amp;key=export&amp;id='.$objDBExport->id.'&amp;return='.$this->Input->get("do"),
+				'href'                => 'do=dataexchange_config&amp;key=export&amp;id='.$objDBExport->id.'&amp;return='.$this->Input->get("do"),				
+				'class'			=> 'dataexchange dataexchange_'.standardize($objDBExport->addExportInDCAName),
 			);
 		}
 	}
