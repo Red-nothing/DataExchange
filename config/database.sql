@@ -1,4 +1,15 @@
+-- **********************************************************
+-- *                                                        *
+-- * IMPORTANT NOTE                                         *
+-- *                                                        *
+-- * Do not import this file manually but use the TYPOlight *
+-- * install tool to create and maintain database tables!   *
+-- *                                                        *
+-- **********************************************************
 
+-- 
+-- Table `tl_dataexchange_config`
+-- 
 
 CREATE TABLE `tl_dataexchange_config` (
   `id` int(10) unsigned NOT NULL auto_increment,
@@ -11,13 +22,16 @@ CREATE TABLE `tl_dataexchange_config` (
   `exportRAW` char(1) NOT NULL default '',
   `prependString` varchar(255) NOT NULL default '',
   `storeDir` varchar(255) NOT NULL default '',
-  `exportCSVSeparator` varchar(255) NOT NULL default ',',
-  
+  `exportCSVSeparator` varchar(255) NOT NULL default ', ',
   PRIMARY KEY  (`id`),
   KEY `pid` (`pid`),
-
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+-- --------------------------------------------------------
+
+-- 
+-- Table `tl_dataexchange_fields`
+-- 
 
 CREATE TABLE `tl_dataexchange_fields` (
   `id` int(10) unsigned NOT NULL auto_increment,
@@ -31,3 +45,4 @@ CREATE TABLE `tl_dataexchange_fields` (
   PRIMARY KEY  (`id`),
   KEY `pid` (`pid`),
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+

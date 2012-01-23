@@ -1,21 +1,42 @@
 <?php if (!defined('TL_ROOT')) die('You cannot access this file directly!');
 
+/**
+ * Contao Open Source CMS
+ * Copyright © 2005-2011 Leo Feyer
+ *
+ * Formerly known as TYPOlight Open Source CMS.
+ *
+ * This program is free software: you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation, either
+ * version 3 of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this program. If not, please visit the Free
+ * Software Foundation website at <http://www.gnu.org/licenses/>.
+ *
+ * PHP version 5
+ * @copyright  Stefan Lindecke 2012
+ * @author     Stefan Lindecke <stefan@chektrion.de>
+ * @author     Andreas Schempp <andreas@schempp.ch>
+ * @license    http://opensource.org/licenses/lgpl-3.0.html
+ */
+
+
 $GLOBALS['TL_DCA']['tl_dataexchange_fields'] = array
 (
 
 	// Config
 	'config' => array
 	(
-		'dataContainer'               => 'Table',
-		'ptable'                      => 'tl_dataexchange_config',
-		'enableVersioning'            => true,
-		'onload_callback' => array
-		(
-		),
-		'onsubmit_callback' => array
-		(
-		
-		)
+		'dataContainer'				=> 'Table',
+		'ptable'					=> 'tl_dataexchange_config',
+		'enableVersioning'			=> true,
 	),
 
 	
@@ -24,94 +45,93 @@ $GLOBALS['TL_DCA']['tl_dataexchange_fields'] = array
 	(
 		'sorting' => array
 		(
-			'mode'                    => 4,
-			'fields'                  => array('sorting'),
-			'panelLayout'             => 'filter,search,limit',
-			'headerFields'            => array('name','tableName'),
-			'child_record_callback'   => array('tl_dataexchange_fields', 'listField')
+			'mode'					=> 4,
+			'fields'				=> array('sorting'),
+			'panelLayout'			=> 'filter,search,limit',
+			'headerFields'			=> array('name', 'tableName'),
+			'child_record_callback'	=> array('tl_dataexchange_fields', 'listField')
 		),
 		'global_operations' => array
 		(
 			'all' => array
 			(
-				'label'               => &$GLOBALS['TL_LANG']['MSC']['all'],
-				'href'                => 'act=select',
-				'class'               => 'header_edit_all',
-				'attributes'          => 'onclick="Backend.getScrollOffset();" accesskey="e"'
+				'label'				=> &$GLOBALS['TL_LANG']['MSC']['all'],
+				'href'				=> 'act=select',
+				'class'				=> 'header_edit_all',
+				'attributes'		=> 'onclick="Backend.getScrollOffset();" accesskey="e"'
 			)
 		),
 		'operations' => array
 		(
 			'edit' => array
 			(
-				'label'               => &$GLOBALS['TL_LANG']['tl_dataexchange_fields']['edit'],
-				'href'                => 'act=edit',
-				'icon'                => 'edit.gif'
+				'label'				=> &$GLOBALS['TL_LANG']['tl_dataexchange_fields']['edit'],
+				'href'				=> 'act=edit',
+				'icon'				=> 'edit.gif'
 			),
 			'copy' => array
 			(
-				'label'               => &$GLOBALS['TL_LANG']['tl_dataexchange_fields']['copy'],
-				'href'                => 'act=paste&amp;mode=copy',
-				'icon'                => 'copy.gif',
-				'attributes'          => 'onclick="Backend.getScrollOffset();"'
+				'label'				=> &$GLOBALS['TL_LANG']['tl_dataexchange_fields']['copy'],
+				'href'				=> 'act=paste&amp;mode=copy',
+				'icon'				=> 'copy.gif',
+				'attributes'		=> 'onclick="Backend.getScrollOffset();"'
 			),
 			'cut' => array
 			(
-				'label'               => &$GLOBALS['TL_LANG']['tl_dataexchange_fields']['cut'],
-				'href'                => 'act=paste&amp;mode=cut',
-				'icon'                => 'cut.gif',
-				'attributes'          => 'onclick="Backend.getScrollOffset();"'
+				'label'				=> &$GLOBALS['TL_LANG']['tl_dataexchange_fields']['cut'],
+				'href'				=> 'act=paste&amp;mode=cut',
+				'icon'				=> 'cut.gif',
+				'attributes'		=> 'onclick="Backend.getScrollOffset();"'
 			),
 			'delete' => array
 			(
-				'label'               => &$GLOBALS['TL_LANG']['tl_dataexchange_fields']['delete'],
-				'href'                => 'act=delete',
-				'icon'                => 'delete.gif',
-				'attributes'          => 'onclick="if (!confirm(\'' . $GLOBALS['TL_LANG']['MSC']['deleteConfirm'] . '\')) return false; Backend.getScrollOffset();"'
+				'label'				=> &$GLOBALS['TL_LANG']['tl_dataexchange_fields']['delete'],
+				'href'				=> 'act=delete',
+				'icon'				=> 'delete.gif',
+				'attributes'		=> 'onclick="if (!confirm(\'' . $GLOBALS['TL_LANG']['MSC']['deleteConfirm'] . '\')) return false; Backend.getScrollOffset();"'
 			),
 			'toggle' => array
 			(
-				'label'               => &$GLOBALS['TL_LANG']['tl_dataexchange_fields']['toggle'],
-				'icon'                => 'invisible.gif',
-				'attributes'          => 'onclick="Backend.getScrollOffset(); return AjaxRequest.toggleVisibility(this, %s);"',
-				'button_callback'     => array('tl_dataexchange_fields', 'toggleIcon')
+				'label'				=> &$GLOBALS['TL_LANG']['tl_dataexchange_fields']['toggle'],
+				'icon'				=> 'invisible.gif',
+				'attributes'		=> 'onclick="Backend.getScrollOffset(); return AjaxRequest.toggleVisibility(this, %s);"',
+				'button_callback'	=> array('tl_dataexchange_fields', 'toggleIcon')
 			),
 			'show' => array
 			(
-				'label'               => &$GLOBALS['TL_LANG']['tl_dataexchange_fields']['show'],
-				'href'                => 'act=show',
-				'icon'                => 'show.gif'
+				'label'				=> &$GLOBALS['TL_LANG']['tl_dataexchange_fields']['show'],
+				'href'				=> 'act=show',
+				'icon'				=> 'show.gif'
 			)
 		)
 	),
 
 	'palettes'   =>  array
 	(
-    	'default'   =>   '{areaDefault_legend},dcaField,enabled'
+		'default' => '{areaDefault_legend},dcaField,enabled'
 	),
 	// Fields
 	'fields' => array
 	(
 		'dcaField' => array
 		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_dataexchange_fields']['dcaField'],
-			'exclude'                 => true,
-			'search'                  => true,
-			'inputType'               => 'text',
-			'eval'                    => array('mandatory'=>true, 'maxlength'=>255)
+			'label'					=> &$GLOBALS['TL_LANG']['tl_dataexchange_fields']['dcaField'],
+			'exclude'				=> true,
+			'search'				=> true,
+			'inputType'				=> 'text',
+			'eval'					=> array('mandatory'=>true, 'maxlength'=>255)
 		),
 		'enabled' => array
 		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_dataexchange_fields']['enabled'],
-			'exclude'                 => true,
-			'inputType'               => 'checkbox',
+			'label'					=> &$GLOBALS['TL_LANG']['tl_dataexchange_fields']['enabled'],
+			'exclude'				=> true,
+			'inputType'				=> 'checkbox',
 		),
 		'isRealField' => array
 		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_dataexchange_fields']['isRealField'],
-			'exclude'                 => true,
-			'inputType'               => 'checkbox',
-			'eval'                    => array()
+			'label'					=> &$GLOBALS['TL_LANG']['tl_dataexchange_fields']['isRealField'],
+			'exclude'				=> true,
+			'inputType'				=> 'checkbox',
 		),
 		
 	)
@@ -120,15 +140,6 @@ $GLOBALS['TL_DCA']['tl_dataexchange_fields'] = array
 
 class tl_dataexchange_fields extends Backend
 {
-	public function __construct()
-	{
-		parent::__construct();
-		$this->import('BackendUser', 'User');
-		$this->import("Database");
-		
-		
-	}
-
 
 	public function listField($arrRow)
 	{
@@ -138,7 +149,6 @@ class tl_dataexchange_fields extends Backend
 ' . $arrRow['dcaField'] . '
 ' . "\n";
 	}
-	
 	
 	
 	public function toggleIcon($row, $href, $label, $title, $icon, $attributes)
@@ -180,4 +190,3 @@ class tl_dataexchange_fields extends Backend
 	}
 }
 
-?>
