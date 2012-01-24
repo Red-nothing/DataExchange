@@ -34,7 +34,8 @@
 $GLOBALS['BE_MOD']['system']['dataexchange_config'] = array
 (
 	'tables'	=> array('tl_dataexchange_config', 'tl_dataexchange_fields'),
-	'export'	=> array('DataExchangeBackend','exportTable')
+	'icon'		=> 'system/modules/DataExchange/html/icon.png',
+	'export'	=> array('DataExchangeBackend','exportTable'),
 );
 
 
