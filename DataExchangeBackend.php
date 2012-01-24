@@ -42,8 +42,8 @@ class DataExchangeBackend extends Backend
 		
 		
 		$objDataExchangeConfig = $this->Database->prepare("SELECT * FROM tl_dataexchange_config WHERE id=?")
-								   ->limit(1)
-								   ->execute($exportID);
+											 	->limit(1)
+												->execute($exportID);
 
 		if ($objDataExchangeConfig->numRows < 1)
 		{
@@ -124,21 +124,21 @@ class DataExchangeBackend extends Backend
 			
 			$arrData[] = $arrFieldData;
 		}
-
+		
 		
 		if ($objDataExchangeConfig->includeHeader)
 		{
 			$objExportFile->headerFields = $arrFields;
 		}
 		
-			$objExportFile->seperator = $objDataExchangeConfig->exportCSVSeparator;
+		$objExportFile->seperator = $objDataExchangeConfig->exportCSVSeparator;
 		$objExportFile->excel = $objDataExchangeConfig->exportCSVExcel;
-		
+
 		
 		$objExportFile->content = $arrData;
 		
 		if ($objDataExchangeConfig->exportToFile)
-		{		
+		{
 			$strStoreDir = $objDataExchangeConfig->storeDir;
 		
 			if ($strStoreDir == '')
@@ -169,16 +169,23 @@ class DataExchangeBackend extends Backend
 
 	public function loadDataContainerHook($strName)
 	{
+		$arrOperations = array();
 		$objDBExport = $this->Database->prepare("SELECT * FROM tl_dataexchange_config WHERE tableName=? AND addExportInDCA='1'")->execute($strName);
 		
 		while ($objDBExport->next())
 		{
-			$GLOBALS['TL_DCA'][$objDBExport->tableName]['list']['global_operations']['export_'.$objDBExport->id] = array
+			$arrOperations['export_'.$objDBExport->id] = array
 			(
-				'label'               => $objDBExport->name,
-				'href'                => 'do=dataexchange_config&amp;key=export&amp;id='.$objDBExport->id.'&amp;return='.$this->Input->get("do"),				
-				'class'			=> 'dataexchange dataexchange_'.standardize($objDBExport->name),
+				'label'		=> $objDBExport->name,
+				'href'		=> 'do=dataexchange_config&amp;key=export&amp;id='.$objDBExport->id.'&amp;return='.$this->Input->get('do'),				
+				'class'		=> 'dataexchange header_dataexchange_' . $objDBExport->exportType . ' dataexchange_'.standardize($objDBExport->name),
 			);
+		}
+		
+		if (!empty($arrOperations))
+		{
+			array_insert($GLOBALS['TL_DCA'][$objDBExport->tableName]['list']['global_operations'], 0, $arrOperations);
+			$GLOBALS['TL_CSS'][] = 'system/modules/DataExchange/html/style.css';
 		}
 	}
 }
