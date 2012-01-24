@@ -30,9 +30,9 @@
 
 class DataExchangeBackend extends Backend
 {
+
 	public function exportTable(DataContainer $dc)
 	{
-		
 		$exportID = $dc->id;
 		
 		if ($this->Input->get("return"))
@@ -53,15 +53,14 @@ class DataExchangeBackend extends Backend
 		$objDataExchangeFields = $this->Database->prepare("SELECT * FROM tl_dataexchange_fields WHERE pid=? AND enabled=1 AND dcaTableName=? ORDER BY sorting")
 								   ->execute($dc->id,$objDataExchangeConfig->tableName);
 
-		$arrFields = array();	
+		$arrFields = array();
 		while ($objDataExchangeFields->next())
 		{
 			$arrFields[] = $objDataExchangeFields->dcaField;
 		}	
 		
 		$objData = $this->Database->prepare("SELECT ".implode(',',$arrFields)." FROM ".$objDataExchangeConfig->tableName)->execute();
-				
-					
+
 		$objExportFile = new CsvWriter();
 		$arrData = array();
 		
@@ -174,8 +173,6 @@ class DataExchangeBackend extends Backend
 	}
 
 
-
-	
 	public function loadDataContainerHook($strName)
 	{
 		$objDBExport = $this->Database->prepare("SELECT * FROM tl_dataexchange_config WHERE tableName=? AND addExportInDCA='1'")->execute($strName);
@@ -190,5 +187,4 @@ class DataExchangeBackend extends Backend
 			);
 		}
 	}
-	
 }

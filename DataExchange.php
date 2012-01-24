@@ -30,24 +30,38 @@
 
 class DataExchange extends Controller
 {
+
+	/**
+	 * Current DCA table
+	 * @var string
+	 */
 	protected $strDCA;
-	protected $separator;
+	
+	/**
+	 * Separator
+	 * @var string
+	 */
+	protected $strSeparator;
+	
+	/**
+	 * Export data
+	 * @var array
+	 */
 	protected $arrData = array();
 	
 	
-	public function __construct($strDCA,$strName,$bGenerateBEConfig)
+	/**
+	 * Construct object
+	 * @param string
+	 * @param string
+	 * @param bool
+	 */
+	public function __construct($strDCA, $strName, $bGenerateBEConfig)
 	{
 		$this->import("Database");
 		
 		$this->strDCA = $strDCA;
-		
-		$this->__set("separator",";");
-	}
-	
-	public function loadData()
-	{
-			
-	
+		$this->strSeparator = ',';
 	}
 	
 	
@@ -79,8 +93,5 @@ class DataExchange extends Controller
 		$objExportFile->content = $arrData;
 		$objExportFile->saveToFile($strFile);
 	}
-	
-	
-	
 }
 
