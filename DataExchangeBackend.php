@@ -59,7 +59,7 @@ class DataExchangeBackend extends Backend
 			$arrFields[] = $objDataExchangeFields->dcaField;
 		}	
 		
-		$objData = $this->Database->prepare("SELECT " . implode(',', $arrFields)." FROM " . $objConfig->tableName)->execute();
+		$objData = $this->Database->query("SELECT " . implode(',', $arrFields)." FROM " . $objConfig->tableName . ($objConfig->sqlWhere == '' ? '' : ' WHERE '.$objConfig->sqlWhere));
 
 		$objExportFile = new CsvWriter();
 		$arrData = array();

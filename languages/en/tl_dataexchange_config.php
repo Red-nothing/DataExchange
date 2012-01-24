@@ -42,7 +42,7 @@ $GLOBALS['TL_LANG']['tl_dataexchange_config']['exportCSVExcel']		= array('Excel 
 $GLOBALS['TL_LANG']['tl_dataexchange_config']['includeHeader']		= array('Include header', 'Should be a header added');
 $GLOBALS['TL_LANG']['tl_dataexchange_config']['exportRAW']			= array('Export in RAW format', 'Do not resolve foreign tables');
 
-
+$GLOBALS['TL_LANG']['tl_dataexchange_config']['sqlWhere']			= array('SQL "WHERE" condition', 'You can filter the result set using your custom SQL command.');
 $GLOBALS['TL_LANG']['tl_dataexchange_config']['prependString']		= array('File name prefix', 'Prepend string for output file. InsertTags are replaced.');
 $GLOBALS['TL_LANG']['tl_dataexchange_config']['exportToFile']		= array('Output to file', 'Check here to output to file instead of the browser.');
 $GLOBALS['TL_LANG']['tl_dataexchange_config']['storeDir']			= array('Output directory', 'Select the path where you want to store the export data.');
@@ -62,7 +62,8 @@ $GLOBALS['TL_LANG']['tl_dataexchange_config']['show']			= array('Configuration d
 /**
  * Legends
  */
-$GLOBALS['TL_LANG']['tl_dataexchange_config']['config_legend'] = 'Configuration';
-$GLOBALS['TL_LANG']['tl_dataexchange_config']['csv_legend'] = 'CSV Export';
-$GLOBALS['TL_LANG']['tl_dataexchange_config']['output_legend'] = 'Storing options';
+$GLOBALS['TL_LANG']['tl_dataexchange_config']['config_legend']	= 'Configuration';
+$GLOBALS['TL_LANG']['tl_dataexchange_config']['csv_legend']		= 'CSV Export';
+$GLOBALS['TL_LANG']['tl_dataexchange_config']['expert_legend']	= 'Expert settings';
+$GLOBALS['TL_LANG']['tl_dataexchange_config']['output_legend']	= 'Storing options';
 
