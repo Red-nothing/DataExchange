@@ -35,9 +35,9 @@ class DataExchangeBackend extends Backend
 	{
 		$exportID = $dc->id;
 		
-		if ($this->Input->get("return"))
+		if ($this->Input->get('return'))
 		{
-			$exportID = $this->Input->get("id");
+			$exportID = $this->Input->get('id');
 		}
 		
 		
@@ -70,7 +70,6 @@ class DataExchangeBackend extends Backend
 		while ($objData->next())
 		{	
 			$arrFieldData = $objData->row();
-			
 			
 			if (strlen($objDataExchangeConfig->exportRAW)==0)
 			{	
@@ -119,9 +118,6 @@ class DataExchangeBackend extends Backend
 					{
 						$arrFieldData[$field]=$objWidget->value;	
 					}
-		
-					
-			
 				}	
 				
 			}
@@ -129,46 +125,44 @@ class DataExchangeBackend extends Backend
 			$arrData[] = $arrFieldData;
 		}
 
-		$strStoreDir = $objDataExchangeConfig->storeDir;
-		if (strlen($strStoreDir)==0)
-			$strStoreDir = $GLOBALS['TL_CONFIG']['uploadPath'];
-		
 		
 		if ($objDataExchangeConfig->includeHeader)
 		{
 			$objExportFile->headerFields = $arrFields;
-			
 		}
 		
-		if (strlen($objDataExchangeConfig->exportCSVSeparator)>0)
-		{
 			$objExportFile->seperator = $objDataExchangeConfig->exportCSVSeparator;
-			
-		}
+		$objExportFile->excel = $objDataExchangeConfig->exportCSVExcel;
 		
 		
 		$objExportFile->content = $arrData;
 		
 		if ($objDataExchangeConfig->exportToFile)
 		{		
-			$objExportFile->saveToFile(sprintf("%s/%s%s.csv",$strStoreDir,
+			$strStoreDir = $objDataExchangeConfig->storeDir;
+		
+			if ($strStoreDir == '')
+			{
+				$strStoreDir = $GLOBALS['TL_CONFIG']['uploadPath'];
+			}
+			
+			$objExportFile->saveToFile(sprintf('%s/%s%s.csv',$strStoreDir,
 							$this->replaceInsertTags($objDataExchangeConfig->prependString),
 							$objDataExchangeConfig->tableName));
 		}
 		else
 		{
 			$objExportFile->saveToBrowser();
-				
 		}
 		
 		
-		if ($this->Input->get("return"))
+		if ($this->Input->get('return'))
 		{
-			$this->redirect("contao/main.php?do=".$this->Input->get("return"));
+			$this->redirect('contao/main.php?do='.$this->Input->get('return'));
 		}
 		else
 		{
-			$this->redirect("contao/main.php?do=dataexchange_config");
+			$this->redirect('contao/main.php?do=dataexchange_config');
 		}
 	}
 

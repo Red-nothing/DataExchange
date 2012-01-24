@@ -42,7 +42,7 @@ $GLOBALS['BE_MOD']['system']['dataexchange_config'] = array
 /**
  * Hooks
  */
-$GLOBALS['TL_HOOKS']['loadDataContainer'][] = array('DataExchangeBackend','loadDataContainerHook');
+$GLOBALS['TL_HOOKS']['loadDataContainer'][] = array('DataExchangeBackend', 'loadDataContainerHook');
 
 
 /**

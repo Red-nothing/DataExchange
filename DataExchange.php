@@ -58,7 +58,7 @@ class DataExchange extends Controller
 	 */
 	public function __construct($strDCA, $strName, $bGenerateBEConfig)
 	{
-		$this->import("Database");
+		$this->import('Database');
 		
 		$this->strDCA = $strDCA;
 		$this->strSeparator = ',';

@@ -108,7 +108,7 @@ $GLOBALS['TL_DCA']['tl_dataexchange_fields'] = array
 
 	'palettes'   =>  array
 	(
-		'default' => '{areaDefault_legend},dcaField,enabled'
+		'default' => '{field_legend},dcaField;{config_legend},enabled,isRealField',
 	),
 	// Fields
 	'fields' => array
@@ -119,19 +119,21 @@ $GLOBALS['TL_DCA']['tl_dataexchange_fields'] = array
 			'exclude'				=> true,
 			'search'				=> true,
 			'inputType'				=> 'text',
-			'eval'					=> array('mandatory'=>true, 'maxlength'=>255)
+			'eval'					=> array('mandatory'=>true, 'maxlength'=>255, 'tl_class'=>'long')
 		),
 		'enabled' => array
 		(
 			'label'					=> &$GLOBALS['TL_LANG']['tl_dataexchange_fields']['enabled'],
 			'exclude'				=> true,
 			'inputType'				=> 'checkbox',
+			'eval'					=> array('tl_class'=>'w50'),
 		),
 		'isRealField' => array
 		(
 			'label'					=> &$GLOBALS['TL_LANG']['tl_dataexchange_fields']['isRealField'],
 			'exclude'				=> true,
 			'inputType'				=> 'checkbox',
+			'eval'					=> array('tl_class'=>'w50'),
 		),
 		
 	)

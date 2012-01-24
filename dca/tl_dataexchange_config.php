@@ -217,7 +217,7 @@ $GLOBALS['TL_DCA']['tl_dataexchange_config'] = array
 			'label'					=> &$GLOBALS['TL_LANG']['tl_dataexchange_config']['storeDir'],
 			'exclude'				=> true,
 			'inputType'				=> 'fileTree',
-			'eval'					=> array('fieldType'=>'radio', 'tl_class'=>'clr')
+			'eval'					=> array('fieldType'=>'radio', 'mandatory'=>true, 'tl_class'=>'clr')
 		),
 	)
 );
