@@ -122,8 +122,7 @@ $GLOBALS['TL_DCA']['tl_dataexchange_config'] = array
 	),
 	'subpalettes'	=> array
 	(
-		'addExportInDCA' => 'addExportInDCAName',
-		'exportToFile'  => 'prependString,storeDir'
+		'exportToFile'				=> 'storeDir'
 	),
 	
 	// Fields
@@ -169,7 +168,6 @@ $GLOBALS['TL_DCA']['tl_dataexchange_config'] = array
 			'label'                   => &$GLOBALS['TL_LANG']['tl_dataexchange_config']['addExportInDCA'],
 			'exclude'                 => true,
 			'inputType'               => 'checkbox',
-			'eval'                    => array('submitOnChange'=>true)
 		),
 		'addExportInDCAName' => array
 		(

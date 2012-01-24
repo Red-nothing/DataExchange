@@ -25,7 +25,6 @@ CREATE TABLE `tl_dataexchange_config` (
   `storeDir` varchar(255) NOT NULL default '',
   `exportCSVSeparator` varchar(255) NOT NULL default ',',
   `addExportInDCA` char(1) NOT NULL default '',
-  `addExportInDCAName` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id`),
   KEY `pid` (`pid`),
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
