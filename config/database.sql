@@ -13,7 +13,6 @@
 
 CREATE TABLE `tl_dataexchange_config` (
   `id` int(10) unsigned NOT NULL auto_increment,
-  `pid` int(10) unsigned NOT NULL default '0',
   `tstamp` int(10) unsigned NOT NULL default '0',
   `name` varchar(255) NOT NULL default '',
   `addExportInDCA` char(1) NOT NULL default '',
@@ -27,7 +26,6 @@ CREATE TABLE `tl_dataexchange_config` (
   `exportToFile` char(1) NOT NULL default '',
   `storeDir` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id`),
-  KEY `pid` (`pid`),
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
