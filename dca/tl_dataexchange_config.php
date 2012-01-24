@@ -116,9 +116,9 @@ $GLOBALS['TL_DCA']['tl_dataexchange_config'] = array
 
 	'palettes'	=> array
 	(
-		'__selector__' 	=> array('exportType','addExportInDCA','exportToFile'),
-		'default' => '{areaDefault_legend},name,tableName,addExportInDCA,exportType;{areaExport_legend},exportToFile',
-		'csv' => '{areaDefault_legend},name,tableName,addExportInDCA,exportType,exportRAW;{areaExport_CSV_legend},includeHeader,exportCSVSeparator;{areaExport_legend},exportToFile'
+		'__selector__'				=> array('exportType', 'exportToFile'),
+		'default'					=> '{config_legend},name,tableName,exportType',
+		'csv'						=> '{config_legend},name,addExportInDCA,tableName,exportType;{csv_legend},exportCSVSeparator,exportCSVExcel,includeHeader,exportRAW;{output_legend},prependString,exportToFile'
 	),
 	'subpalettes'	=> array
 	(
@@ -136,13 +136,20 @@ $GLOBALS['TL_DCA']['tl_dataexchange_config'] = array
 			'inputType'				=> 'text',
 			'eval'					=> array('mandatory'=>true, 'maxlength'=>255,'tl_class'=>'w50')
 		),
+		'addExportInDCA' => array
+		(
+			'label'					=> &$GLOBALS['TL_LANG']['tl_dataexchange_config']['addExportInDCA'],
+			'exclude'				=> true,
+			'inputType'				=> 'checkbox',
+			'eval'					=> array('tl_class'=>'w50 m12')
+		),
 		'tableName' => array
 		(
-			'label'				=> &$GLOBALS['TL_LANG']['tl_dataexchange_config']['tableName'],
+			'label'					=> &$GLOBALS['TL_LANG']['tl_dataexchange_config']['tableName'],
 			'exclude'				=> true,
 			'inputType'				=> 'select',
 			'options'				=> $this->Database->listTables(),
-			'eval'					=> array('tl_class'=>'w50')
+			'eval'					=> array('tl_class'=>'w50'),
 		),
 		'exportType' => array
 		(
@@ -152,51 +159,44 @@ $GLOBALS['TL_DCA']['tl_dataexchange_config'] = array
 			'default'				=> 'csv',
 			'options'				=> array_keys($GLOBALS['DataExchangeProvider']['export']),
 			'reference'				=> &$GLOBALS['TL_LANG']['tl_dataexchange_config']['DataExchangeProvider']['export'],
-			'eval'					=> array('submitOnChange'=>true)
+			'eval'					=> array('submitOnChange'=>true),
+			'eval'					=> array('tl_class'=>'w50'),
+		),
+		'exportCSVSeparator' => array
+		(
+			'label'					=> &$GLOBALS['TL_LANG']['tl_dataexchange_config']['exportCSVSeparator'],
+			'exclude'				=> true,
+			'default'				=> ',',
+			'inputType'				=> 'select',
+			'options'				=> array(','=>$GLOBALS['TL_LANG']['MSC']['comma'], ';'=>$GLOBALS['TL_LANG']['MSC']['semicolon'], '	'=>$GLOBALS['TL_LANG']['MSC']['tabulator']),
+			'eval'					=> array('mandatory'=>true, 'tl_class'=>'w50'),
+		),
+		'exportCSVExcel' => array
+		(
+			'label'					=> &$GLOBALS['TL_LANG']['tl_dataexchange_config']['exportCSVExcel'],
+			'exclude'				=> true,
+			'inputType'				=> 'checkbox',
+			'eval'					=> array('tl_class'=>'w50 m12'),
 		),
 		
 		
-		'exportToFile' => array
-		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_dataexchange_config']['exportToFile'],
-			'exclude'                 => true,
-			'inputType'               => 'checkbox',
-			'eval'                    => array('submitOnChange'=>true)
-		),
-		'addExportInDCA' => array
-		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_dataexchange_config']['addExportInDCA'],
-			'exclude'                 => true,
-			'inputType'               => 'checkbox',
-		),
-		'addExportInDCAName' => array
-		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_dataexchange_config']['addExportInDCAName'],
-			'exclude'                 => true,
-			'inputType'               => 'text',
-			'eval'                    => array('mandatory'=>true)
-		),
+		
 		'includeHeader' => array
 		(
 			'label'					=> &$GLOBALS['TL_LANG']['tl_dataexchange_config']['includeHeader'],
 			'exclude'				=> true,
 			'inputType'				=> 'checkbox',
-			'eval'					=> array()
+			'eval'					=> array('tl_class'=>'w50'),
 		),
 		'exportRAW' => array
 		(
 			'label'					=> &$GLOBALS['TL_LANG']['tl_dataexchange_config']['exportRAW'],
 			'exclude'				=> true,
 			'inputType'				=> 'checkbox',
-			'eval'					=> array()
+			'eval'					=> array('tl_class'=>'w50'),
 		),
-		'exportCSVSeparator' => array
-		(
-			'label'					=> &$GLOBALS['TL_LANG']['tl_dataexchange_config']['exportCSVSeparator'],
-			'exclude'				=> true,
-			'inputType'				=> 'text',
-			'eval'					=> array('mandatory'=>true)
-		),
+		
+		
 		'prependString' => array
 		(
 			'label'					=> &$GLOBALS['TL_LANG']['tl_dataexchange_config']['prependString'],
@@ -204,6 +204,13 @@ $GLOBALS['TL_DCA']['tl_dataexchange_config'] = array
 			'search'				=> true,
 			'inputType'				=> 'text',
 			'eval'					=> array('maxlength'=>255)
+		),
+		'exportToFile' => array
+		(
+			'label'                   => &$GLOBALS['TL_LANG']['tl_dataexchange_config']['exportToFile'],
+			'exclude'                 => true,
+			'inputType'               => 'checkbox',
+			'eval'                    => array('submitOnChange'=>true)
 		),
 		'storeDir' => array
 		(
