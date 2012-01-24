@@ -33,35 +33,22 @@ class DataExchangeBackend extends Backend
 
 	public function exportTable(DataContainer $dc)
 	{
-		$exportID = $dc->id;
-		
-		if ($this->Input->get('return'))
-		{
-			$exportID = $this->Input->get('id');
-		}
-		
-		
 		$objConfig = $this->Database->prepare("SELECT * FROM tl_dataexchange_config WHERE id=?")
 								 	->limit(1)
-									->execute($exportID);
+									->execute(($this->Input->get('return') == '' ? $dc->id : $this->Input->get('id')));
 
 		if ($objConfig->numRows < 1)
 		{
-			return;
+			$this->redirect('contao/main.php?act=error');
 		}
 
-		$objDataExchangeFields = $this->Database->prepare("SELECT * FROM tl_dataexchange_fields WHERE pid=? AND enabled=1 AND dcaTableName=? ORDER BY sorting")
-								   ->execute($dc->id,$objConfig->tableName);
+		$arrFields = $this->Database->prepare("SELECT dcaField FROM tl_dataexchange_fields WHERE pid=? AND enabled=1 AND dcaTableName=? ORDER BY sorting")
+									->execute($objConfig->id, $objConfig->tableName)
+									->fetchEach('dcaField');
 
-		$arrFields = array();
-		while ($objDataExchangeFields->next())
-		{
-			$arrFields[] = $objDataExchangeFields->dcaField;
-		}	
-		
 		$objData = $this->Database->query("SELECT " . implode(',', $arrFields)." FROM " . $objConfig->tableName . ($objConfig->sqlWhere == '' ? '' : ' WHERE '.$objConfig->sqlWhere));
 
-		$objExportFile = new CsvWriter();
+		$objCSV = new CsvWriter();
 		$arrData = array();
 		
 		
@@ -71,36 +58,35 @@ class DataExchangeBackend extends Backend
 		{	
 			$arrFieldData = $objData->row();
 			
-			if (strlen($objConfig->exportRAW)==0)
+			if (!$objConfig->exportRAW)
 			{	
 				foreach ($arrFields as $field)
 				{	
-					$arrDataItem = $GLOBALS['TL_DCA'][$objConfig->tableName]['fields'][$field];
+					$arrDCA = $GLOBALS['TL_DCA'][$objConfig->tableName]['fields'][$field];
 					
 					
-					$strClass = $GLOBALS['TL_FFL'][$arrDataItem['inputType']];
+					$strClass = $GLOBALS['TL_FFL'][$arrDCA['inputType']];
 		
 					if (!$this->classFileExists($strClass))
 					{
 						continue;
 					}
 		
-					$arrDataItem['eval']['required'] = $arrDataItem['eval']['mandatory'];
+					$arrDCA['eval']['required'] = $arrDCA['eval']['mandatory'];
 		
-					$arrDataItem['default'] = $arrFieldData[$field];
+					$arrDCA['default'] = $arrFieldData[$field];
 					
-					$arrWidget = $this->prepareForWidget($arrDataItem, $field, $arrDataItem['default']);
+					$arrWidget = $this->prepareForWidget($arrDCA, $field, $arrDCA['default']);
 					$objWidget = new $strClass($arrWidget);
 					$objParsedWidget = $objWidget->parse();
 					
-					if ((is_array($arrWidget['options'])) && (count($arrWidget['options'])>0))
+					if (is_array($arrWidget['options']) && count($arrWidget['options']))
 					{
 						$arrFieldOptions = array();
 						
 						foreach ($arrWidget['options'] as $widgetField)
 						{
 							$arrFieldOptions[$widgetField['value']] = $widgetField['label'];
-						
 						}
 						
 						if (!is_array($objWidget->value))
@@ -111,15 +97,12 @@ class DataExchangeBackend extends Backend
 						{
 							$arrFieldData[$field]=$objWidget->value;	
 						}
-						
-			
 					} 
 					else 
 					{
 						$arrFieldData[$field]=$objWidget->value;	
 					}
 				}	
-				
 			}
 			
 			$arrData[] = $arrFieldData;
@@ -128,14 +111,12 @@ class DataExchangeBackend extends Backend
 		
 		if ($objConfig->includeHeader)
 		{
-			$objExportFile->headerFields = $arrFields;
+			$objCSV->headerFields = $arrFields;
 		}
 		
-		$objExportFile->seperator = $objConfig->exportCSVSeparator;
-		$objExportFile->excel = $objConfig->exportCSVExcel;
-
-		
-		$objExportFile->content = $arrData;
+		$objCSV->seperator = $objConfig->exportCSVSeparator;
+		$objCSV->excel = $objConfig->exportCSVExcel;
+		$objCSV->content = $arrData;
 		
 		if ($objConfig->exportToFile)
 		{
@@ -146,15 +127,14 @@ class DataExchangeBackend extends Backend
 				$strStoreDir = $GLOBALS['TL_CONFIG']['uploadPath'];
 			}
 			
-			$objExportFile->saveToFile(sprintf('%s/%s%s.csv',$strStoreDir,
-							$this->replaceInsertTags($objConfig->prependString),
-							$objConfig->tableName));
+			$objCSV->saveToFile(sprintf('%s/%s%s.csv',$strStoreDir,
+								$this->replaceInsertTags($objConfig->prependString),
+								$objConfig->tableName));
 		}
 		else
 		{
-			$objExportFile->saveToBrowser();
+			$objCSV->saveToBrowser();
 		}
-		
 		
 		if ($this->Input->get('return'))
 		{
@@ -167,6 +147,11 @@ class DataExchangeBackend extends Backend
 	}
 
 
+	/**
+	 * Dynamically inject global operation for DataExchange configuration
+	 * @param string
+	 * @link http://www.contao.org/hooks.html#loadDataContainer
+	 */
 	public function loadDataContainerHook($strName)
 	{
 		$arrOperations = array();
@@ -189,3 +174,4 @@ class DataExchangeBackend extends Backend
 		}
 	}
 }
+
