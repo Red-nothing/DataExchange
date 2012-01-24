@@ -41,17 +41,17 @@ class DataExchangeBackend extends Backend
 		}
 		
 		
-		$objDataExchangeConfig = $this->Database->prepare("SELECT * FROM tl_dataexchange_config WHERE id=?")
-											 	->limit(1)
-												->execute($exportID);
+		$objConfig = $this->Database->prepare("SELECT * FROM tl_dataexchange_config WHERE id=?")
+								 	->limit(1)
+									->execute($exportID);
 
-		if ($objDataExchangeConfig->numRows < 1)
+		if ($objConfig->numRows < 1)
 		{
 			return;
 		}
 
 		$objDataExchangeFields = $this->Database->prepare("SELECT * FROM tl_dataexchange_fields WHERE pid=? AND enabled=1 AND dcaTableName=? ORDER BY sorting")
-								   ->execute($dc->id,$objDataExchangeConfig->tableName);
+								   ->execute($dc->id,$objConfig->tableName);
 
 		$arrFields = array();
 		while ($objDataExchangeFields->next())
@@ -59,23 +59,23 @@ class DataExchangeBackend extends Backend
 			$arrFields[] = $objDataExchangeFields->dcaField;
 		}	
 		
-		$objData = $this->Database->prepare("SELECT ".implode(',',$arrFields)." FROM ".$objDataExchangeConfig->tableName)->execute();
+		$objData = $this->Database->prepare("SELECT " . implode(',', $arrFields)." FROM " . $objConfig->tableName)->execute();
 
 		$objExportFile = new CsvWriter();
 		$arrData = array();
 		
 		
-		$this->loadDataContainer($objDataExchangeConfig->tableName);
+		$this->loadDataContainer($objConfig->tableName);
 		
 		while ($objData->next())
 		{	
 			$arrFieldData = $objData->row();
 			
-			if (strlen($objDataExchangeConfig->exportRAW)==0)
+			if (strlen($objConfig->exportRAW)==0)
 			{	
 				foreach ($arrFields as $field)
 				{	
-					$arrDataItem = $GLOBALS['TL_DCA'][$objDataExchangeConfig->tableName]['fields'][$field];
+					$arrDataItem = $GLOBALS['TL_DCA'][$objConfig->tableName]['fields'][$field];
 					
 					
 					$strClass = $GLOBALS['TL_FFL'][$arrDataItem['inputType']];
@@ -126,20 +126,20 @@ class DataExchangeBackend extends Backend
 		}
 		
 		
-		if ($objDataExchangeConfig->includeHeader)
+		if ($objConfig->includeHeader)
 		{
 			$objExportFile->headerFields = $arrFields;
 		}
 		
-		$objExportFile->seperator = $objDataExchangeConfig->exportCSVSeparator;
-		$objExportFile->excel = $objDataExchangeConfig->exportCSVExcel;
+		$objExportFile->seperator = $objConfig->exportCSVSeparator;
+		$objExportFile->excel = $objConfig->exportCSVExcel;
 
 		
 		$objExportFile->content = $arrData;
 		
-		if ($objDataExchangeConfig->exportToFile)
+		if ($objConfig->exportToFile)
 		{
-			$strStoreDir = $objDataExchangeConfig->storeDir;
+			$strStoreDir = $objConfig->storeDir;
 		
 			if ($strStoreDir == '')
 			{
@@ -147,8 +147,8 @@ class DataExchangeBackend extends Backend
 			}
 			
 			$objExportFile->saveToFile(sprintf('%s/%s%s.csv',$strStoreDir,
-							$this->replaceInsertTags($objDataExchangeConfig->prependString),
-							$objDataExchangeConfig->tableName));
+							$this->replaceInsertTags($objConfig->prependString),
+							$objConfig->tableName));
 		}
 		else
 		{
