@@ -26,13 +26,10 @@
  * @author     Andreas Schempp <andreas@schempp.ch>
  * @license    http://opensource.org/licenses/lgpl-3.0.html
  */
-$GLOBALS['BE_MOD']['system'] = array
+$GLOBALS['BE_MOD']['system']['dataexchange_config'] = array
 (
-	'dataexchange_config' => array
-	(
-		'tables' => array('tl_dataexchange_config', 'tl_dataexchange_fields'),
-		'export'	=> array('DataExchangeBackend','exportTable')
-	)
+	'tables' => array('tl_dataexchange_config', 'tl_dataexchange_fields'),
+	'export'	=> array('DataExchangeBackend','exportTable')
 );
 
 
