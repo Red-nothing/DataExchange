@@ -265,7 +265,6 @@ class tl_dataexchange_config extends Backend
 					(
 						'pid' => $dc->activeRecord->id,
 						'dcaField' =>$tableField['name'],
-						'isRealField' =>1,
 						'enabled' => !in_array($tableField['name'], $arrHideFields),
 						'sorting'=>$sorting++
 					);

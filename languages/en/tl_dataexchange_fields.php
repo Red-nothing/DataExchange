@@ -33,7 +33,6 @@
  */
 $GLOBALS['TL_LANG']['tl_dataexchange_fields']['dcaField'] = array('DCA Field');
 $GLOBALS['TL_LANG']['tl_dataexchange_fields']['enabled'] = array('Export this field');
-$GLOBALS['TL_LANG']['tl_dataexchange_fields']['isRealField'] = array('');
 
 
 /**
