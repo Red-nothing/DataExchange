@@ -118,7 +118,7 @@ $GLOBALS['TL_DCA']['tl_dataexchange_config'] = array
 	(
 		'__selector__'				=> array('exportType', 'exportToFile'),
 		'default'					=> '{config_legend},name,tableName,exportType',
-		'csv'						=> '{config_legend},name,addExportInDCA,tableName,exportType;{csv_legend},exportCSVSeparator,exportCSVExcel,includeHeader,exportRAW;{expert_legend:hide},sqlWhere;{output_legend},prependString,exportToFile'
+		'csv'						=> '{config_legend},name,addExportInDCA,tableName,exportType;{csv_legend},exportCSVSeparator,exportCSVExcel,includeHeader;{expert_legend:hide},sqlWhere;{output_legend},prependString,exportToFile'
 	),
 	
 	// Subpalettes
@@ -180,9 +180,6 @@ $GLOBALS['TL_DCA']['tl_dataexchange_config'] = array
 			'inputType'				=> 'checkbox',
 			'eval'					=> array('tl_class'=>'w50 m12'),
 		),
-		
-		
-		
 		'includeHeader' => array
 		(
 			'label'					=> &$GLOBALS['TL_LANG']['tl_dataexchange_config']['includeHeader'],
@@ -190,15 +187,6 @@ $GLOBALS['TL_DCA']['tl_dataexchange_config'] = array
 			'inputType'				=> 'checkbox',
 			'eval'					=> array('tl_class'=>'w50'),
 		),
-		'exportRAW' => array
-		(
-			'label'					=> &$GLOBALS['TL_LANG']['tl_dataexchange_config']['exportRAW'],
-			'exclude'				=> true,
-			'inputType'				=> 'checkbox',
-			'eval'					=> array('tl_class'=>'w50'),
-		),
-		
-		
 		'sqlWhere' => array
 		(
 			'label'					=> &$GLOBALS['TL_LANG']['tl_dataexchange_config']['sqlWhere'],

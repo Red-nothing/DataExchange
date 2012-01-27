@@ -135,7 +135,6 @@ $GLOBALS['TL_DCA']['tl_dataexchange_fields'] = array
 			'inputType'				=> 'checkbox',
 			'eval'					=> array('tl_class'=>'w50'),
 		),
-		
 	)
 );
 

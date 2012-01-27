@@ -58,51 +58,48 @@ class DataExchangeBackend extends Backend
 		{	
 			$arrFieldData = $objData->row();
 			
-			if (!$objConfig->exportRAW)
+			foreach ($arrFields as $field)
 			{	
-				foreach ($arrFields as $field)
-				{	
-					$arrDCA = $GLOBALS['TL_DCA'][$objConfig->tableName]['fields'][$field];
+				$arrDCA = $GLOBALS['TL_DCA'][$objConfig->tableName]['fields'][$field];
+				
+				
+				$strClass = $GLOBALS['TL_FFL'][$arrDCA['inputType']];
+	
+				if (!$this->classFileExists($strClass))
+				{
+					continue;
+				}
+	
+				$arrDCA['eval']['required'] = $arrDCA['eval']['mandatory'];
+	
+				$arrDCA['default'] = $arrFieldData[$field];
+				
+				$arrWidget = $this->prepareForWidget($arrDCA, $field, $arrDCA['default']);
+				$objWidget = new $strClass($arrWidget);
+				$objParsedWidget = $objWidget->parse();
+				
+				if (is_array($arrWidget['options']) && count($arrWidget['options']))
+				{
+					$arrFieldOptions = array();
 					
-					
-					$strClass = $GLOBALS['TL_FFL'][$arrDCA['inputType']];
-		
-					if (!$this->classFileExists($strClass))
+					foreach ($arrWidget['options'] as $widgetField)
 					{
-						continue;
+						$arrFieldOptions[$widgetField['value']] = $widgetField['label'];
 					}
-		
-					$arrDCA['eval']['required'] = $arrDCA['eval']['mandatory'];
-		
-					$arrDCA['default'] = $arrFieldData[$field];
 					
-					$arrWidget = $this->prepareForWidget($arrDCA, $field, $arrDCA['default']);
-					$objWidget = new $strClass($arrWidget);
-					$objParsedWidget = $objWidget->parse();
-					
-					if (is_array($arrWidget['options']) && count($arrWidget['options']))
+					if (!is_array($objWidget->value))
 					{
-						$arrFieldOptions = array();
-						
-						foreach ($arrWidget['options'] as $widgetField)
-						{
-							$arrFieldOptions[$widgetField['value']] = $widgetField['label'];
-						}
-						
-						if (!is_array($objWidget->value))
-						{
-							$arrFieldData[$field]=$arrFieldOptions[$objWidget->value];
-						}
-						else 
-						{
-							$arrFieldData[$field]=$objWidget->value;	
-						}
-					} 
+						$arrFieldData[$field]=$arrFieldOptions[$objWidget->value];
+					}
 					else 
 					{
 						$arrFieldData[$field]=$objWidget->value;	
 					}
-				}	
+				} 
+				else 
+				{
+					$arrFieldData[$field]=$objWidget->value;	
+				}
 			}
 			
 			$arrData[] = $arrFieldData;

@@ -37,11 +37,7 @@ $GLOBALS['TL_LANG']['tl_dataexchange_config']['tableName']			= array('Table name
 $GLOBALS['TL_LANG']['tl_dataexchange_config']['exportType']			= array('Type of export', 'Please select your preferred export type.');
 $GLOBALS['TL_LANG']['tl_dataexchange_config']['exportCSVSeparator']	= array('CSV separator', 'Select the separator for your export. Default is a comma.');
 $GLOBALS['TL_LANG']['tl_dataexchange_config']['exportCSVExcel']		= array('Excel for Windows', 'Make the export encoding compatible with Excel for Windows.');
-
-
 $GLOBALS['TL_LANG']['tl_dataexchange_config']['includeHeader']		= array('Include header', 'Should be a header added');
-$GLOBALS['TL_LANG']['tl_dataexchange_config']['exportRAW']			= array('Export in RAW format', 'Do not resolve foreign tables');
-
 $GLOBALS['TL_LANG']['tl_dataexchange_config']['sqlWhere']			= array('SQL "WHERE" condition', 'You can filter the result set using your custom SQL command.');
 $GLOBALS['TL_LANG']['tl_dataexchange_config']['prependString']		= array('File name prefix', 'Prepend string for output file. InsertTags are replaced.');
 $GLOBALS['TL_LANG']['tl_dataexchange_config']['exportToFile']		= array('Output to file', 'Check here to output to file instead of the browser.');
