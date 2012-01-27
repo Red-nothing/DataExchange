@@ -28,7 +28,7 @@
  */
 
 
-class DataExchangeBackend extends Backend
+class DataExchange extends Backend
 {
 
 	public function exportTable(DataContainer $dc)

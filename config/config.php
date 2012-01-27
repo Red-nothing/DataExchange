@@ -35,14 +35,14 @@ $GLOBALS['BE_MOD']['system']['dataexchange_config'] = array
 (
 	'tables'	=> array('tl_dataexchange_config', 'tl_dataexchange_fields'),
 	'icon'		=> 'system/modules/DataExchange/html/icon.png',
-	'export'	=> array('DataExchangeBackend','exportTable'),
+	'export'	=> array('DataExchange','exportTable'),
 );
 
 
 /**
  * Hooks
  */
-$GLOBALS['TL_HOOKS']['loadDataContainer'][] = array('DataExchangeBackend', 'loadDataContainerHook');
+$GLOBALS['TL_HOOKS']['loadDataContainer'][] = array('DataExchange', 'loadDataContainerHook');
 
 
 /**
