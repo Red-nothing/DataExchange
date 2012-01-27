@@ -42,8 +42,8 @@ class DataExchangeBackend extends Backend
 			$this->redirect('contao/main.php?act=error');
 		}
 
-		$arrFields = $this->Database->prepare("SELECT dcaField FROM tl_dataexchange_fields WHERE pid=? AND enabled=1 AND dcaTableName=? ORDER BY sorting")
-									->execute($objConfig->id, $objConfig->tableName)
+		$arrFields = $this->Database->prepare("SELECT dcaField FROM tl_dataexchange_fields WHERE pid=? AND enabled=1 ORDER BY sorting")
+									->execute($objConfig->id)
 									->fetchEach('dcaField');
 
 		$objData = $this->Database->query("SELECT " . implode(',', $arrFields)." FROM " . $objConfig->tableName . ($objConfig->sqlWhere == '' ? '' : ' WHERE '.$objConfig->sqlWhere));

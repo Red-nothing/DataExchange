@@ -264,7 +264,6 @@ class tl_dataexchange_config extends Backend
 					$arrInsertData = array
 					(
 						'pid' => $dc->activeRecord->id,
-						'dcaTableName'	=> $dc->activeRecord->tableName,
 						'dcaField' =>$tableField['name'],
 						'isRealField' =>1,
 						'enabled' => !in_array($tableField['name'], $arrHideFields),
