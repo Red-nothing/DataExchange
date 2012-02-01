@@ -108,7 +108,7 @@ $GLOBALS['TL_DCA']['tl_dataexchange_fields'] = array
 
 	'palettes'   =>  array
 	(
-		'default' => '{field_legend},dcaField;{config_legend},enabled',
+		'default' => '{field_legend},dcaField,label,fieldQuery;{config_legend},enabled',
 	),
 	// Fields
 	'fields' => array
@@ -117,9 +117,29 @@ $GLOBALS['TL_DCA']['tl_dataexchange_fields'] = array
 		(
 			'label'					=> &$GLOBALS['TL_LANG']['tl_dataexchange_fields']['dcaField'],
 			'exclude'				=> true,
+			'inputType'				=> 'select',
+			'options_callback'		=> array('tl_dataexchange_fields', 'getDcaFields'),
+			'eval'					=> array('includeBlankOption'=>true, 'tl_class'=>'w50')
+		),
+		'label' => array
+		(
+			'label'					=> &$GLOBALS['TL_LANG']['tl_dataexchange_fields']['label'],
+			'exclude'				=> true,
 			'search'				=> true,
 			'inputType'				=> 'text',
-			'eval'					=> array('mandatory'=>true, 'maxlength'=>255, 'tl_class'=>'long')
+			'eval'					=> array('maxlength'=>255, 'tl_class'=>'w50')
+		),
+		'fieldQuery' => array
+		(
+			'label'					=> &$GLOBALS['TL_LANG']['tl_dataexchange_fields']['fieldQuery'],
+			'exclude'				=> true,
+			'search'				=> true,
+			'inputType'				=> 'text',
+			'eval'					=> array('maxlength'=>255, 'tl_class'=>'clr long'),
+			'save_callback' => array
+			(
+				array('tl_dataexchange_fields', 'validateQuery'),
+			),
 		),
 		'enabled' => array
 		(
@@ -128,7 +148,7 @@ $GLOBALS['TL_DCA']['tl_dataexchange_fields'] = array
 			'inputType'				=> 'checkbox',
 			'eval'					=> array('tl_class'=>'w50'),
 		),
-		),
+	),
 );
 
 
@@ -137,11 +157,48 @@ class tl_dataexchange_fields extends Backend
 
 	public function listField($arrRow)
 	{
-		$key = $arrRow['enabled'] ? 'unpublished' : 'published';
-
-		return '
-' . $arrRow['dcaField'] . '
-' . "\n";
+		return $arrRow['dcaField'];
+	}
+	
+	
+	/**
+	 * Return a list of DCA fields (based on parent config table)
+	 * @param DataContainer
+	 * @return array
+	 * @link http://www.contao.org/callbacks.html#options_callback
+	 */
+	public function getDcaFields($dc)
+	{
+		$arrFields = array();
+		
+		$objConfig = $this->Database->prepare("SELECT * FROM tl_dataexchange_config WHERE id=?")->execute($dc->activeRecord->pid);
+		$this->loadDataContainer($objConfig->tableName);
+		$this->loadLanguageFile($objConfig->tableName);
+		
+		foreach( $GLOBALS['TL_DCA'][$objConfig->tableName]['fields'] as $field => $arrData )
+		{
+			$arrFields[$field] = $arrData['label'][0] == '' ? $field : $arrData['label'][0];
+		}
+		
+		return $arrFields;
+	}
+	
+	
+	/**
+	 * Make sure there is either a fieldQuery entered or a dcaField selected
+	 * @param string
+	 * @param DataContainer
+	 * @return string
+	 * @link http://www.contao.org/callbacks.html#save_callback
+	 */
+	public function validateQuery($varValue, $dc)
+	{
+		if ($varValue == '' && $this->Input->post('dcaField') == '')
+		{
+			throw new Exception($GLOBALS['TL_LANG']['ERR']['deFieldEmpty']);
+		}
+		
+		return $varValue;
 	}
 	
 	

@@ -42,63 +42,25 @@ class DataExchange extends Backend
 			$this->redirect('contao/main.php?act=error');
 		}
 
-		$arrFields = $this->Database->prepare("SELECT dcaField FROM tl_dataexchange_fields WHERE pid=? AND enabled=1 ORDER BY sorting")
-									->execute($objConfig->id)
-									->fetchEach('dcaField');
-
-		$objData = $this->Database->query("SELECT " . implode(',', $arrFields)." FROM " . $objConfig->tableName . ($objConfig->sqlWhere == '' ? '' : ' WHERE '.$objConfig->sqlWhere));
-
 		$objCSV = new CsvWriter();
 		$arrData = array();
-		
-		
+		$arrResult = $this->getFieldResults($objConfig);
+
 		$this->loadDataContainer($objConfig->tableName);
 		
-		while ($objData->next())
-		{	
-			$arrFieldData = $objData->row();
-			
-			foreach ($arrFields as $field)
-			{	
-				$arrDCA = $GLOBALS['TL_DCA'][$objConfig->tableName]['fields'][$field];
-				
-				
-				$strClass = $GLOBALS['TL_FFL'][$arrDCA['inputType']];
-	
-				if (!$this->classFileExists($strClass))
+		foreach ($arrResult as $arrRow)
+		{
+			$arrFieldData = array();
+
+			foreach ($arrRow as $arrField)
+			{
+				if ($arrField['dcaField'] != '')
 				{
-					continue;
+					$arrFieldData[] = $this->formatValue($objConfig->tableName, $arrField['dcaField'], $arrField['value']);
 				}
-	
-				$arrDCA['eval']['required'] = $arrDCA['eval']['mandatory'];
-	
-				$arrDCA['default'] = $arrFieldData[$field];
-				
-				$arrWidget = $this->prepareForWidget($arrDCA, $field, $arrDCA['default']);
-				$objWidget = new $strClass($arrWidget);
-				$objParsedWidget = $objWidget->parse();
-				
-				if (is_array($arrWidget['options']) && count($arrWidget['options']))
+				else
 				{
-					$arrFieldOptions = array();
-					
-					foreach ($arrWidget['options'] as $widgetField)
-					{
-						$arrFieldOptions[$widgetField['value']] = $widgetField['label'];
-					}
-					
-					if (!is_array($objWidget->value))
-					{
-						$arrFieldData[$field]=$arrFieldOptions[$objWidget->value];
-					}
-					else 
-					{
-						$arrFieldData[$field]=$objWidget->value;	
-					}
-				} 
-				else 
-				{
-					$arrFieldData[$field]=$objWidget->value;	
+					$arrFieldData[] = $arrField['value'];
 				}
 			}
 			
@@ -106,9 +68,28 @@ class DataExchange extends Backend
 		}
 		
 		
+		// Add header fields
 		if ($objConfig->includeHeader)
 		{
-			$objCSV->headerFields = $arrFields;
+			$arrHeader = array();
+			
+			foreach( $arrResult[0] as $id => $arrField )
+			{
+				if ($arrField['label'] != '')
+				{
+					$arrHeader[] = $arrField['label'];
+				}
+				elseif ($arrField['dcaField'] != '')
+				{
+					$arrHeader[] = $this->formatLabel($objConfig->tableName, $arrField['dcaField']);
+				}
+				else
+				{
+					$arrHeader[] = $id;
+				}
+			}
+			
+			$objCSV->headerFields = $arrHeader;
 		}
 		
 		$objCSV->seperator = $objConfig->exportCSVSeparator;
@@ -141,6 +122,144 @@ class DataExchange extends Backend
 		{
 			$this->redirect('contao/main.php?do=dataexchange_config');
 		}
+	}
+	
+	
+	/**
+	 * Get a result set with field config and value
+	 * @param Database_Result
+	 * @return array
+	 */
+	protected function getFieldResults(Database_Result $objConfig)
+	{
+		$arrQuery = array();
+		$arrFields = array();
+		$objFields = $this->Database->prepare("SELECT * FROM tl_dataexchange_fields WHERE pid=? AND enabled=1 ORDER BY sorting")
+									->execute($objConfig->id);
+
+		while( $objFields->next() )
+		{
+			$arrFields[$objFields->id] = $objFields->row();
+			$arrQuery[] = ($objFields->fieldQuery == '' ? $objFields->dcaField : $objFields->fieldQuery) . ' AS `' . $objFields->id . '`';
+		}
+
+		$arrResult = array();
+		$objResult = $this->Database->query("SELECT " . implode(',', $arrQuery) . " FROM " . $objConfig->tableName . ($objConfig->sqlWhere == '' ? '' : ' WHERE '.$objConfig->sqlWhere));
+		
+		while( $objResult->next() )
+		{
+			$arrRow = array();
+			
+			foreach( $objResult->row() as $id => $value )
+			{
+				$arrRow[$id] = $arrFields[$id];
+				$arrRow[$id]['value'] = $value;
+			}
+			
+			$arrResult[] = $arrRow;
+		}
+		
+		return $arrResult;
+	}
+	
+	
+	/**
+	 * Format value (based on DC_Table::show(), Contao 2.9.0)
+	 * @param string
+	 * @param string
+	 * @param mixed
+	 * @return string
+	 */
+	public function formatValue($strTable, $strField, $varValue)
+	{
+		$varValue = deserialize($varValue);
+		
+		// Decrypt the value
+		if ($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['eval']['encrypt'])
+		{
+			$this->import('Encryption');
+			$varValue = $this->Encryption->decrypt($varValue);
+		}
+
+		// Get field value
+		if (strlen($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['foreignKey']))
+		{
+			$chunks = explode('.', $GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['foreignKey']);
+			$varValue = empty($varValue) ? array(0) : $varValue;
+			$objKey = $this->Database->execute("SELECT " . $chunks[1] . " AS value FROM " . $chunks[0] . " WHERE id IN (" . implode(',', array_map('intval', (array)$varValue)) . ")");
+
+			return implode(', ', $objKey->fetchEach('value'));
+		}
+
+		elseif (is_array($varValue))
+		{
+			foreach ($varValue as $kk => $vv)
+			{
+				$varValue[$kk] = $this->formatValue($strTable, $strField, $vv);
+			}
+
+			return implode(', ', $varValue);
+		}
+
+		elseif ($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['eval']['rgxp'] == 'date')
+		{
+			return $this->parseDate($GLOBALS['TL_CONFIG']['dateFormat'], $varValue);
+		}
+
+		elseif ($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['eval']['rgxp'] == 'time')
+		{
+			return $this->parseDate($GLOBALS['TL_CONFIG']['timeFormat'], $varValue);
+		}
+
+		elseif ($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['eval']['rgxp'] == 'datim' || in_array($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['flag'], array(5, 6, 7, 8, 9, 10)) || $strField == 'tstamp')
+		{
+			return $this->parseDate($GLOBALS['TL_CONFIG']['datimFormat'], $varValue);
+		}
+
+		elseif ($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['inputType'] == 'checkbox' && !$GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['eval']['multiple'])
+		{
+			return strlen($varValue) ? $GLOBALS['TL_LANG']['MSC']['yes'] : $GLOBALS['TL_LANG']['MSC']['no'];
+		}
+
+		elseif ($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['inputType'] == 'textarea' && ($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['eval']['allowHtml'] || $GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['eval']['preserveTags']))
+		{
+			return specialchars($varValue);
+		}
+
+		elseif (is_array($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['reference']))
+		{
+			return isset($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['reference'][$varValue]) ? ((is_array($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['reference'][$varValue])) ? $GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['reference'][$varValue][0] : $GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['reference'][$varValue]) : $varValue;
+		}
+
+		return $varValue;
+	}
+
+
+	/**
+	 * Format label (based on DC_Table::show(), Contao 2.9.0)
+	 * @param string
+	 * @param string
+	 * @return string
+	 */
+	public function formatLabel($strTable, $strField)
+	{
+		// Label
+		if (count($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['label']))
+		{
+			$strLabel = is_array($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['label']) ? $GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['label'][0] : $GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['label'];
+		}
+
+		else
+		{
+			$strLabel = is_array($GLOBALS['TL_LANG']['MSC'][$strField]) ? $GLOBALS['TL_LANG']['MSC'][$strField][0] : $GLOBALS['TL_LANG']['MSC'][$strField];
+		}
+
+		if (!strlen($strLabel))
+		{
+			$strLabel = $strField;
+		}
+
+		return $strLabel;
 	}
 
 

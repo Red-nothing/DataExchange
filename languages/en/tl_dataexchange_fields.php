@@ -31,8 +31,10 @@
 /**
  * Fields
  */
-$GLOBALS['TL_LANG']['tl_dataexchange_fields']['dcaField'] = array('DCA Field');
-$GLOBALS['TL_LANG']['tl_dataexchange_fields']['enabled'] = array('Export this field');
+$GLOBALS['TL_LANG']['tl_dataexchange_fields']['dcaField']	= array('DCA Field', 'Select if this field should be retrieved from DCA config.');
+$GLOBALS['TL_LANG']['tl_dataexchange_fields']['label']		= array('Label', 'Here you can set/override the field label');
+$GLOBALS['TL_LANG']['tl_dataexchange_fields']['fieldQuery']	= array('Custom query', 'Enter an SQL query if you want to manually retrieve this field value.');
+$GLOBALS['TL_LANG']['tl_dataexchange_fields']['enabled']	= array('Export', 'Check here to include this field in the export.');
 
 
 /**
@@ -49,4 +51,6 @@ $GLOBALS['TL_LANG']['tl_dataexchange_fields']['show'] = array('Show');
 /**
  * Legends
  */
+$GLOBALS['TL_LANG']['tl_dataexchange_fields']['field_legend']	= 'Field settings';
+$GLOBALS['TL_LANG']['tl_dataexchange_fields']['config_legend']	= 'Configuration';
 
