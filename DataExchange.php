@@ -201,17 +201,17 @@ class DataExchange extends Backend
 			return implode(', ', $varValue);
 		}
 
-		elseif ($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['eval']['rgxp'] == 'date')
+		elseif ($varValue != '' && $GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['eval']['rgxp'] == 'date')
 		{
 			return $this->parseDate($GLOBALS['TL_CONFIG']['dateFormat'], $varValue);
 		}
 
-		elseif ($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['eval']['rgxp'] == 'time')
+		elseif ($varValue != '' && $GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['eval']['rgxp'] == 'time')
 		{
 			return $this->parseDate($GLOBALS['TL_CONFIG']['timeFormat'], $varValue);
 		}
 
-		elseif ($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['eval']['rgxp'] == 'datim' || in_array($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['flag'], array(5, 6, 7, 8, 9, 10)) || $strField == 'tstamp')
+		elseif ($varValue != '' && ($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['eval']['rgxp'] == 'datim' || in_array($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['flag'], array(5, 6, 7, 8, 9, 10)) || $strField == 'tstamp'))
 		{
 			return $this->parseDate($GLOBALS['TL_CONFIG']['datimFormat'], $varValue);
 		}
