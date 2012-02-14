@@ -71,6 +71,8 @@ class DataExchange extends Backend
 		// Add header fields
 		if ($objConfig->includeHeader)
 		{
+			$this->loadLanguageFile($objConfig->tableName);
+
 			$arrHeader = array();
 			
 			foreach( $arrResult[0] as $id => $arrField )
@@ -144,7 +146,7 @@ class DataExchange extends Backend
 		}
 
 		$arrResult = array();
-		$objResult = $this->Database->query("SELECT " . implode(',', $arrQuery) . " FROM " . $objConfig->tableName . ($objConfig->sqlWhere == '' ? '' : ' WHERE '.$objConfig->sqlWhere));
+		$objResult = $this->Database->query("SELECT " . implode(', ', $arrQuery) . " FROM " . $objConfig->tableName . ($objConfig->sqlWhere == '' ? '' : ' WHERE '.$objConfig->sqlWhere));
 		
 		while( $objResult->next() )
 		{
