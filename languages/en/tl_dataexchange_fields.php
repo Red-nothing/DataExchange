@@ -40,12 +40,15 @@ $GLOBALS['TL_LANG']['tl_dataexchange_fields']['enabled']	= array('Export', 'Chec
 /**
  * Buttons
  */
-$GLOBALS['TL_LANG']['tl_dataexchange_fields']['edit'] = array('Edit');
-$GLOBALS['TL_LANG']['tl_dataexchange_fields']['copy'] = array('Copy');
-$GLOBALS['TL_LANG']['tl_dataexchange_fields']['cut'] = array('Cut');
-$GLOBALS['TL_LANG']['tl_dataexchange_fields']['delete'] = array('Delete');
-$GLOBALS['TL_LANG']['tl_dataexchange_fields']['toggle'] = array('Toggle visibility');
-$GLOBALS['TL_LANG']['tl_dataexchange_fields']['show'] = array('Show');
+$GLOBALS['TL_LANG']['tl_dataexchange_fields']['new']		= array('Add field', 'Add a new field to this configuration.');
+$GLOBALS['TL_LANG']['tl_dataexchange_fields']['edit']		= array('Edit field', 'Edit field ID %s');
+$GLOBALS['TL_LANG']['tl_dataexchange_fields']['copy']		= array('Copy field', 'Copy field ID %s');
+$GLOBALS['TL_LANG']['tl_dataexchange_fields']['cut']		= array('Cut field', 'Cut field ID %s');
+$GLOBALS['TL_LANG']['tl_dataexchange_fields']['delete']		= array('Delete field', 'Delete field ID %s');
+$GLOBALS['TL_LANG']['tl_dataexchange_fields']['toggle']		= array('Toggle visibility');
+$GLOBALS['TL_LANG']['tl_dataexchange_fields']['show']		= array('Show details', 'Show details of field ID %s');
+$GLOBALS['TL_LANG']['tl_dataexchange_fields']['pasteafter']	= array('Paste on top', 'Paste after field ID %s');
+
 
 
 /**
