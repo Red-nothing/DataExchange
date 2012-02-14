@@ -155,9 +155,32 @@ $GLOBALS['TL_DCA']['tl_dataexchange_fields'] = array
 class tl_dataexchange_fields extends Backend
 {
 
+	/**
+	 * Render row view in the backend view
+	 * @param array
+	 * @return string
+	 */
 	public function listField($arrRow)
 	{
-		return $arrRow['dcaField'];
+		if ($arrRow['label'] == '')
+		{
+			$strLabel = $arrRow['dcaField'];
+		}
+		elseif ($arrRow['dcaField'] == '')
+		{
+			$strLabel = $arrRow['label'];
+		}
+		else
+		{
+			$strLabel = $arrRow['label'] . ' [' . $arrRow['dcaField'] . ']';
+		}
+		
+		if ($arrRow['fieldQuery'] != '')
+		{
+			$strLabel .= '<br><span style="color:#b3b3b3">' . $arrRow['fieldQuery'] . '</span>';
+		}
+		
+		return $strLabel;
 	}
 	
 	
