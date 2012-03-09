@@ -108,7 +108,7 @@ $GLOBALS['TL_DCA']['tl_dataexchange_fields'] = array
 
 	'palettes'   =>  array
 	(
-		'default' => '{field_legend},dcaField,label,fieldQuery;{config_legend},enabled',
+		'default' => '{field_legend},dcaField,label,fieldQuery;{config_legend},enabled,useFilter',
 	),
 	// Fields
 	'fields' => array
@@ -140,6 +140,13 @@ $GLOBALS['TL_DCA']['tl_dataexchange_fields'] = array
 			(
 				array('tl_dataexchange_fields', 'validateQuery'),
 			),
+		),
+		'useFilter' => array
+		(
+			'label'					=> &$GLOBALS['TL_LANG']['tl_dataexchange_fields']['useFilter'],
+			'exclude'				=> true,
+			'inputType'				=> 'checkbox',
+			'eval'					=> array('tl_class'=>'w50'),
 		),
 		'enabled' => array
 		(

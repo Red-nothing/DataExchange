@@ -35,6 +35,7 @@ $GLOBALS['TL_LANG']['tl_dataexchange_fields']['dcaField']	= array('DCA Field', '
 $GLOBALS['TL_LANG']['tl_dataexchange_fields']['label']		= array('Label', 'Here you can set/override the field label');
 $GLOBALS['TL_LANG']['tl_dataexchange_fields']['fieldQuery']	= array('Custom query', 'Enter an SQL query if you want to manually retrieve this field value.');
 $GLOBALS['TL_LANG']['tl_dataexchange_fields']['enabled']	= array('Export', 'Check here to include this field in the export.');
+$GLOBALS['TL_LANG']['tl_dataexchange_fields']['useFilter']	= array('Apply field filters', 'If the DCA list has a filter for this field, the result set is filtered based on its value.');
 
 
 /**

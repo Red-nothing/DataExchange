@@ -41,12 +41,12 @@ class DataExchange extends Backend
 		{
 			$this->redirect('contao/main.php?act=error');
 		}
+		
+		$this->loadDataContainer($objConfig->tableName);
 
 		$objCSV = new CsvWriter();
 		$arrData = array();
 		$arrResult = $this->getFieldResults($objConfig);
-
-		$this->loadDataContainer($objConfig->tableName);
 		
 		foreach ($arrResult as $arrRow)
 		{
@@ -135,7 +135,18 @@ class DataExchange extends Backend
 	protected function getFieldResults(Database_Result $objConfig)
 	{
 		$arrQuery = array();
+		$arrWhere = array();
+		$arrValues = array();
 		$arrFields = array();
+		
+		$session = $this->Session->getData();
+		$filter = ($GLOBALS['TL_DCA'][$objConfig->tableName]['list']['sorting']['mode'] == 4) ? $objConfig->tableName.'_'.CURRENT_ID : $objConfig->tableName;
+		
+		if ($objConfig->sqlWhere != '')
+		{
+			$arrWhere[] = $objConfig->sqlWhere;
+		}
+		
 		$objFields = $this->Database->prepare("SELECT * FROM tl_dataexchange_fields WHERE pid=? AND enabled=1 ORDER BY sorting")
 									->execute($objConfig->id);
 
@@ -143,10 +154,57 @@ class DataExchange extends Backend
 		{
 			$arrFields[$objFields->id] = $objFields->row();
 			$arrQuery[] = ($objFields->fieldQuery == '' ? $objFields->dcaField : $objFields->fieldQuery) . ' AS `' . $objFields->id . '`';
+			
+			if ($objFields->useFilter && $session['filter'][$objConfig->tableName][$objFields->dcaField] != '')
+			{
+				$field = $objFields->dcaField;
+
+				// Sort by day
+				if (in_array($GLOBALS['TL_DCA'][$objConfig->tableName]['fields'][$field]['flag'], array(5, 6)))
+				{
+					$objDate = new Date($session['filter'][$filter][$field]);
+					$arrWhere[] = $field . ' BETWEEN ? AND ?';
+					$arrValues[] = $objDate->dayBegin;
+					$arrValues[] = $objDate->dayEnd;
+				}
+
+				// Sort by month
+				elseif (in_array($GLOBALS['TL_DCA'][$objConfig->tableName]['fields'][$field]['flag'], array(7, 8)))
+				{
+					$objDate = new Date($session['filter'][$filter][$field]);
+					$arrWhere[] = $field . ' BETWEEN ? AND ?';
+					$arrValues[] = $objDate->monthBegin;
+					$arrValues[] = $objDate->monthEnd;
+				}
+
+				// Sort by year
+				elseif (in_array($GLOBALS['TL_DCA'][$objConfig->tableName]['fields'][$field]['flag'], array(9, 10)))
+				{
+					$objDate = new Date($session['filter'][$filter][$field]);
+					$arrWhere[] = $field . ' BETWEEN ? AND ?';
+					$arrValues[] = $objDate->yearBegin;
+					$arrValues[] = $objDate->yearEnd;
+				}
+
+				// Manual filter
+				elseif ($GLOBALS['TL_DCA'][$objConfig->tableName]['fields'][$field]['eval']['multiple'])
+				{
+					$arrWhere[] = $field . ' LIKE ?';
+					$arrValues[] = '%"' . $session['filter'][$filter][$field] . '"%';
+				}
+
+				// Other sort algorithm
+				else
+				{
+					$arrWhere[] = $field . '=?';
+					$arrValues[] = $session['filter'][$filter][$field];
+				}
+			}
 		}
 
 		$arrResult = array();
-		$objResult = $this->Database->query("SELECT " . implode(', ', $arrQuery) . " FROM " . $objConfig->tableName . ($objConfig->sqlWhere == '' ? '' : ' WHERE '.$objConfig->sqlWhere));
+		$objResult = $this->Database->prepare("SELECT " . implode(', ', $arrQuery) . " FROM " . $objConfig->tableName . (empty($arrWhere) ? '' : ' WHERE ' . implode(' AND ', $arrWhere)))->execute($arrValues);
+		
 		
 		while( $objResult->next() )
 		{

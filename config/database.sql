@@ -42,6 +42,7 @@ CREATE TABLE `tl_dataexchange_fields` (
   `dcaField` varchar(255) NOT NULL default '',
   `label` varchar(255) NOT NULL default '',
   `fieldQuery` varchar(255) NOT NULL default '',
+  `useFilter` char(1) NOT NULL default '',
   `enabled` char(1) NOT NULL default '',
   PRIMARY KEY  (`id`),
   KEY `pid` (`pid`),
