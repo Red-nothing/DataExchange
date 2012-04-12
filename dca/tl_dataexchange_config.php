@@ -170,7 +170,7 @@ $GLOBALS['TL_DCA']['tl_dataexchange_config'] = array
 			'exclude'				=> true,
 			'default'				=> ',',
 			'inputType'				=> 'select',
-			'options'				=> array(','=>$GLOBALS['TL_LANG']['MSC']['comma'], ';'=>$GLOBALS['TL_LANG']['MSC']['semicolon'], '	'=>$GLOBALS['TL_LANG']['MSC']['tabulator']),
+			'options'				=> array(','=>$GLOBALS['TL_LANG']['MSC']['comma'], ';'=>$GLOBALS['TL_LANG']['MSC']['semicolon'], 'tab'=>$GLOBALS['TL_LANG']['MSC']['tabulator']),
 			'eval'					=> array('mandatory'=>true, 'tl_class'=>'w50'),
 		),
 		'exportCSVExcel' => array
@@ -192,7 +192,7 @@ $GLOBALS['TL_DCA']['tl_dataexchange_config'] = array
 			'label'					=> &$GLOBALS['TL_LANG']['tl_dataexchange_config']['sqlWhere'],
 			'exclude'				=> true,
 			'inputType'				=> 'text',
-			'eval'					=> array('maxlength'=>255, 'decodeEntities'=>true, 'tl_class'=>'long'),
+            'eval'					=> array('maxlength'=>255, 'decodeEntities'=>true, 'tl_class'=>'long'),
 		),
 		
 		'prependString' => array
