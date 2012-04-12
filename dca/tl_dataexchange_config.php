@@ -192,7 +192,7 @@ $GLOBALS['TL_DCA']['tl_dataexchange_config'] = array
 			'label'					=> &$GLOBALS['TL_LANG']['tl_dataexchange_config']['sqlWhere'],
 			'exclude'				=> true,
 			'inputType'				=> 'text',
-			'eval'					=> array('maxlength'=>255, 'tl_class'=>'long'),
+			'eval'					=> array('maxlength'=>255, 'decodeEntities'=>true, 'tl_class'=>'long'),
 		),
 		
 		'prependString' => array
