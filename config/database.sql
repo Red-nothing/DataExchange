@@ -22,6 +22,7 @@ CREATE TABLE `tl_dataexchange_config` (
   `exportCSVExcel` char(1) NOT NULL default '',
   `includeHeader` char(1) NOT NULL default '',
   `sqlWhere` varchar(255) NOT NULL default '',
+  `sqlOrderBy` varchar(255) NOT NULL default '',
   `prependString` varchar(255) NOT NULL default '',
   `exportToFile` char(1) NOT NULL default '',
   `storeDir` varchar(255) NOT NULL default '',
