@@ -202,8 +202,15 @@ class DataExchange extends Backend
             }
         }
 
+        if ($objConfig->sqlOrderBy != '') {
+            $strOrderBy = ' ORDER BY ' . $objConfig->sqlOrderBy;
+        }
+        else {
+            $strOrderBy = '';
+        }
+
         $arrResult = array();
-        $objResult = $this->Database->prepare("SELECT " . implode(', ', $arrQuery) . " FROM " . $objConfig->tableName . (empty($arrWhere) ? '' : ' WHERE ' . implode(' AND ', $arrWhere)) . ' ORDER BY ' . $objConfig->sqlOrderBy)->execute($arrValues);
+        $objResult = $this->Database->prepare("SELECT " . implode(', ', $arrQuery) . " FROM " . $objConfig->tableName . (empty($arrWhere) ? '' : ' WHERE ' . implode(' AND ', $arrWhere)) . $strOrderBy)->execute($arrValues);
 
         while( $objResult->next() )
         {
