@@ -37,7 +37,8 @@ class DataExchange extends Backend
 			->limit(1)
 			->execute(($this->Input->get('return') == '' ? $dc->id : $this->Input->get('id')));
 
-		if ($objConfig->numRows < 1) {
+		if ($objConfig->numRows < 1)
+		{
 			$this->redirect('contao/main.php?act=error');
 		}
 
@@ -47,14 +48,18 @@ class DataExchange extends Backend
 		$arrData = array();
 		$arrResult = $this->getFieldResults($objConfig);
 
-		foreach ($arrResult as $arrRow) {
+		foreach ($arrResult as $arrRow)
+		{
 			$arrFieldData = array();
 
-			foreach ($arrRow as $arrField) {
-				if ($arrField['dcaField'] != '') {
+			foreach ($arrRow as $arrField)
+			{
+				if ($arrField['dcaField'] != '')
+				{
 					$arrFieldData[] = $this->formatValue($objConfig->tableName, $arrField['dcaField'], $arrField['value']);
 				}
-				else {
+				else
+				{
 					$arrFieldData[] = $arrField['value'];
 				}
 			}
@@ -64,19 +69,24 @@ class DataExchange extends Backend
 
 
 		// Add header fields
-		if ($objConfig->includeHeader) {
+		if ($objConfig->includeHeader)
+		{
 			$this->loadLanguageFile($objConfig->tableName);
 
 			$arrHeader = array();
 
-			foreach ($arrResult[0] as $id => $arrField) {
-				if ($arrField['label'] != '') {
+			foreach ($arrResult[0] as $id => $arrField)
+			{
+				if ($arrField['label'] != '')
+				{
 					$arrHeader[] = $arrField['label'];
 				}
-				elseif ($arrField['dcaField'] != '') {
+				elseif ($arrField['dcaField'] != '')
+				{
 					$arrHeader[] = $this->formatLabel($objConfig->tableName, $arrField['dcaField']);
 				}
-				else {
+				else
+				{
 					$arrHeader[] = $id;
 				}
 			}
@@ -88,10 +98,12 @@ class DataExchange extends Backend
 		$objCSV->excel = $objConfig->exportCSVExcel;
 		$objCSV->content = $arrData;
 
-		if ($objConfig->exportToFile) {
+		if ($objConfig->exportToFile)
+		{
 			$strStoreDir = $objConfig->storeDir;
 
-			if ($strStoreDir == '') {
+			if ($strStoreDir == '')
+			{
 				$strStoreDir = $GLOBALS['TL_CONFIG']['uploadPath'];
 			}
 
@@ -99,14 +111,17 @@ class DataExchange extends Backend
 				$this->replaceInsertTags($objConfig->prependString),
 				$objConfig->tableName));
 		}
-		else {
+		else
+		{
 			$objCSV->saveToBrowser();
 		}
 
-		if ($this->Input->get('return')) {
+		if ($this->Input->get('return'))
+		{
 			$this->redirect('contao/main.php?do=' . $this->Input->get('return'));
 		}
-		else {
+		else
+		{
 			$this->redirect('contao/main.php?do=dataexchange_config');
 		}
 	}
@@ -127,22 +142,26 @@ class DataExchange extends Backend
 		$session = $this->Session->getData();
 		$filter = ($GLOBALS['TL_DCA'][$objConfig->tableName]['list']['sorting']['mode'] == 4) ? $objConfig->tableName . '_' . CURRENT_ID : $objConfig->tableName;
 
-		if ($objConfig->sqlWhere != '') {
+		if ($objConfig->sqlWhere != '')
+		{
 			$arrWhere[] = $objConfig->sqlWhere;
 		}
 
 		$objFields = $this->Database->prepare("SELECT * FROM tl_dataexchange_fields WHERE pid=? AND enabled=1 ORDER BY sorting")
 			->execute($objConfig->id);
 
-		while ($objFields->next()) {
+		while ($objFields->next())
+		{
 			$arrFields[$objFields->id] = $objFields->row();
 			$arrQuery[] = ($objFields->fieldQuery == '' ? $objFields->dcaField : $objFields->fieldQuery) . ' AS `' . $objFields->id . '`';
 
-			if ($objFields->useFilter && $session['filter'][$objConfig->tableName][$objFields->dcaField] != '') {
+			if ($objFields->useFilter && $session['filter'][$objConfig->tableName][$objFields->dcaField] != '')
+			{
 				$field = $objFields->dcaField;
 
 				// Sort by day
-				if (in_array($GLOBALS['TL_DCA'][$objConfig->tableName]['fields'][$field]['flag'], array(5, 6))) {
+				if (in_array($GLOBALS['TL_DCA'][$objConfig->tableName]['fields'][$field]['flag'], array(5, 6)))
+				{
 					$objDate = new Date($session['filter'][$filter][$field]);
 					$arrWhere[] = $field . ' BETWEEN ? AND ?';
 					$arrValues[] = $objDate->dayBegin;
@@ -150,7 +169,8 @@ class DataExchange extends Backend
 				}
 
 				// Sort by month
-				elseif (in_array($GLOBALS['TL_DCA'][$objConfig->tableName]['fields'][$field]['flag'], array(7, 8))) {
+				elseif (in_array($GLOBALS['TL_DCA'][$objConfig->tableName]['fields'][$field]['flag'], array(7, 8)))
+				{
 					$objDate = new Date($session['filter'][$filter][$field]);
 					$arrWhere[] = $field . ' BETWEEN ? AND ?';
 					$arrValues[] = $objDate->monthBegin;
@@ -158,7 +178,8 @@ class DataExchange extends Backend
 				}
 
 				// Sort by year
-				elseif (in_array($GLOBALS['TL_DCA'][$objConfig->tableName]['fields'][$field]['flag'], array(9, 10))) {
+				elseif (in_array($GLOBALS['TL_DCA'][$objConfig->tableName]['fields'][$field]['flag'], array(9, 10)))
+				{
 					$objDate = new Date($session['filter'][$filter][$field]);
 					$arrWhere[] = $field . ' BETWEEN ? AND ?';
 					$arrValues[] = $objDate->yearBegin;
@@ -166,33 +187,39 @@ class DataExchange extends Backend
 				}
 
 				// Manual filter
-				elseif ($GLOBALS['TL_DCA'][$objConfig->tableName]['fields'][$field]['eval']['multiple']) {
+				elseif ($GLOBALS['TL_DCA'][$objConfig->tableName]['fields'][$field]['eval']['multiple'])
+				{
 					$arrWhere[] = $field . ' LIKE ?';
 					$arrValues[] = '%"' . $session['filter'][$filter][$field] . '"%';
 				}
 
 				// Other sort algorithm
-				else {
+				else
+				{
 					$arrWhere[] = $field . '=?';
 					$arrValues[] = $session['filter'][$filter][$field];
 				}
 			}
 		}
 
-		if ($objConfig->sqlOrderBy != '') {
+		if ($objConfig->sqlOrderBy != '')
+		{
 			$strOrderBy = ' ORDER BY ' . $objConfig->sqlOrderBy;
 		}
-		else {
+		else
+		{
 			$strOrderBy = '';
 		}
 
 		$arrResult = array();
 		$objResult = $this->Database->prepare("SELECT " . implode(', ', $arrQuery) . " FROM " . $objConfig->tableName . (empty($arrWhere) ? '' : ' WHERE ' . implode(' AND ', $arrWhere)) . $strOrderBy)->execute($arrValues);
 
-		while ($objResult->next()) {
+		while ($objResult->next())
+		{
 			$arrRow = array();
 
-			foreach ($objResult->row() as $id => $value) {
+			foreach ($objResult->row() as $id => $value)
+			{
 				$arrRow[$id] = $arrFields[$id];
 				$arrRow[$id]['value'] = $value;
 			}
@@ -216,13 +243,15 @@ class DataExchange extends Backend
 		$varValue = deserialize($varValue);
 
 		// Decrypt the value
-		if ($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['eval']['encrypt']) {
+		if ($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['eval']['encrypt'])
+		{
 			$this->import('Encryption');
 			$varValue = $this->Encryption->decrypt($varValue);
 		}
 
 		// Get field value
-		if (strlen($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['foreignKey'])) {
+		if (strlen($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['foreignKey']))
+		{
 			$chunks = explode('.', $GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['foreignKey']);
 			$varValue = empty($varValue) ? array(0) : $varValue;
 			$objKey = $this->Database->execute("SELECT " . $chunks[1] . " AS value FROM " . $chunks[0] . " WHERE id IN (" . implode(',', array_map('intval', (array)$varValue)) . ")");
@@ -230,35 +259,43 @@ class DataExchange extends Backend
 			return implode(', ', $objKey->fetchEach('value'));
 		}
 
-		elseif (is_array($varValue)) {
-			foreach ($varValue as $kk => $vv) {
+		elseif (is_array($varValue))
+		{
+			foreach ($varValue as $kk => $vv)
+			{
 				$varValue[$kk] = $this->formatValue($strTable, $strField, $vv);
 			}
 
 			return implode(', ', $varValue);
 		}
 
-		elseif ($varValue != '' && $GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['eval']['rgxp'] == 'date') {
+		elseif ($varValue != '' && $GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['eval']['rgxp'] == 'date')
+		{
 			return $this->parseDate($GLOBALS['TL_CONFIG']['dateFormat'], $varValue);
 		}
 
-		elseif ($varValue != '' && $GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['eval']['rgxp'] == 'time') {
+		elseif ($varValue != '' && $GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['eval']['rgxp'] == 'time')
+		{
 			return $this->parseDate($GLOBALS['TL_CONFIG']['timeFormat'], $varValue);
 		}
 
-		elseif ($varValue != '' && ($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['eval']['rgxp'] == 'datim' || in_array($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['flag'], array(5, 6, 7, 8, 9, 10)) || $strField == 'tstamp')) {
+		elseif ($varValue != '' && ($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['eval']['rgxp'] == 'datim' || in_array($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['flag'], array(5, 6, 7, 8, 9, 10)) || $strField == 'tstamp'))
+		{
 			return $this->parseDate($GLOBALS['TL_CONFIG']['datimFormat'], $varValue);
 		}
 
-		elseif ($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['inputType'] == 'checkbox' && !$GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['eval']['multiple']) {
+		elseif ($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['inputType'] == 'checkbox' && !$GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['eval']['multiple'])
+		{
 			return strlen($varValue) ? $GLOBALS['TL_LANG']['MSC']['yes'] : $GLOBALS['TL_LANG']['MSC']['no'];
 		}
 
-		elseif ($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['inputType'] == 'textarea' && ($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['eval']['allowHtml'] || $GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['eval']['preserveTags'])) {
+		elseif ($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['inputType'] == 'textarea' && ($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['eval']['allowHtml'] || $GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['eval']['preserveTags']))
+		{
 			return specialchars($varValue);
 		}
 
-		elseif (is_array($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['reference'])) {
+		elseif (is_array($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['reference']))
+		{
 			return isset($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['reference'][$varValue]) ? ((is_array($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['reference'][$varValue])) ? $GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['reference'][$varValue][0] : $GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['reference'][$varValue]) : $varValue;
 		}
 
@@ -275,15 +312,18 @@ class DataExchange extends Backend
 	public function formatLabel($strTable, $strField)
 	{
 		// Label
-		if (count($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['label'])) {
+		if (count($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['label']))
+		{
 			$strLabel = is_array($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['label']) ? $GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['label'][0] : $GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['label'];
 		}
 
-		else {
+		else
+		{
 			$strLabel = is_array($GLOBALS['TL_LANG']['MSC'][$strField]) ? $GLOBALS['TL_LANG']['MSC'][$strField][0] : $GLOBALS['TL_LANG']['MSC'][$strField];
 		}
 
-		if (!strlen($strLabel)) {
+		if (!strlen($strLabel))
+		{
 			$strLabel = $strField;
 		}
 
@@ -301,7 +341,8 @@ class DataExchange extends Backend
 		$arrOperations = array();
 		$objDBExport = $this->Database->prepare("SELECT * FROM tl_dataexchange_config WHERE tableName=? AND addExportInDCA='1'")->execute($strName);
 
-		while ($objDBExport->next()) {
+		while ($objDBExport->next())
+		{
 			$arrOperations['export_' . $objDBExport->id] = array
 			(
 				'label' => $objDBExport->name,
@@ -310,7 +351,8 @@ class DataExchange extends Backend
 			);
 		}
 
-		if (!empty($arrOperations)) {
+		if (!empty($arrOperations))
+		{
 			array_insert($GLOBALS['TL_DCA'][$objDBExport->tableName]['list']['global_operations'], 0, $arrOperations);
 			$GLOBALS['TL_CSS'][] = 'system/modules/DataExchange/html/style.css';
 		}

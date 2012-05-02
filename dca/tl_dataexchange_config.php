@@ -238,7 +238,8 @@ class tl_dataexchange_config extends Backend
 
 		$arrFields = array();
 
-		while ($objFields->next()) {
+		while ($objFields->next())
+		{
 			$arrFields[] = $objFields->dcaField;
 		}
 
@@ -253,16 +254,19 @@ class tl_dataexchange_config extends Backend
 	{
 		$strTableName = $dc->activeRecord->tableName;
 
-		if ($this->Database->tableExists($strTableName)) {
+		if ($this->Database->tableExists($strTableName))
+		{
 			$arrTableFields = $this->Database->listFields($strTableName);
 
 			$arrHideFields = array('id', 'pid');
 			$sorting = 0;
 
-			foreach ($arrTableFields as $tableField) {
+			foreach ($arrTableFields as $tableField)
+			{
 				$objFieldExists = $this->Database->prepare("SELECT * FROM tl_dataexchange_fields WHERE pid=? AND dcaField=?")->execute($dc->activeRecord->id, $tableField['name']);
 
-				if ($objFieldExists->numRows == 0) {
+				if ($objFieldExists->numRows == 0)
+				{
 					$arrInsertData = array
 					(
 						'pid' => $dc->activeRecord->id,
