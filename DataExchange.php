@@ -10,12 +10,12 @@
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation, either
  * version 3 of the License, or (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public
  * License along with this program. If not, please visit the Free
  * Software Foundation website at <http://www.gnu.org/licenses/>.
@@ -34,20 +34,21 @@ class DataExchange extends Backend
 	public function exportTable(DataContainer $dc)
 	{
 		$objConfig = $this->Database->prepare("SELECT * FROM tl_dataexchange_config WHERE id=?")
-			->limit(1)
-			->execute(($this->Input->get('return') == '' ? $dc->id : $this->Input->get('id')));
+								 	->limit(1)
+									->execute(($this->Input->get('return') == '' ? $dc->id : $this->Input->get('id')));
 
 		if ($objConfig->numRows < 1)
 		{
 			$this->redirect('contao/main.php?act=error');
 		}
-
+		
+		$this->import('String');
 		$this->loadDataContainer($objConfig->tableName);
 
 		$objCSV = new CsvWriter();
 		$arrData = array();
 		$arrResult = $this->getFieldResults($objConfig);
-
+		
 		foreach ($arrResult as $arrRow)
 		{
 			$arrFieldData = array();
@@ -56,26 +57,29 @@ class DataExchange extends Backend
 			{
 				if ($arrField['dcaField'] != '')
 				{
-					$arrFieldData[] = $this->formatValue($objConfig->tableName, $arrField['dcaField'], $arrField['value']);
+					$strValue = $this->formatValue($objConfig->tableName, $arrField['dcaField'], $arrField['value']);
 				}
 				else
 				{
-					$arrFieldData[] = $arrField['value'];
+					$strValue = $arrField['value'];
 				}
+				
+				// Decode special entities (e.g. brackets), Contao automatically encodes them in the database
+				$arrFieldData[] = $this->String->decodeEntities($strValue);
 			}
-
+			
 			$arrData[] = $arrFieldData;
 		}
-
-
+		
+		
 		// Add header fields
 		if ($objConfig->includeHeader)
 		{
 			$this->loadLanguageFile($objConfig->tableName);
 
 			$arrHeader = array();
-
-			foreach ($arrResult[0] as $id => $arrField)
+			
+			foreach( $arrResult[0] as $id => $arrField )
 			{
 				if ($arrField['label'] != '')
 				{
@@ -90,43 +94,43 @@ class DataExchange extends Backend
 					$arrHeader[] = $id;
 				}
 			}
-
+			
 			$objCSV->headerFields = $arrHeader;
 		}
 
 		$objCSV->seperator = $objConfig->exportCSVSeparator == "tab" ? "\t" : $objConfig->exportCSVSeparator;
 		$objCSV->excel = $objConfig->exportCSVExcel;
 		$objCSV->content = $arrData;
-
+		
 		if ($objConfig->exportToFile)
 		{
 			$strStoreDir = $objConfig->storeDir;
-
+		
 			if ($strStoreDir == '')
 			{
 				$strStoreDir = $GLOBALS['TL_CONFIG']['uploadPath'];
 			}
-
-			$objCSV->saveToFile(sprintf('%s/%s%s.csv', $strStoreDir,
-				$this->replaceInsertTags($objConfig->prependString),
-				$objConfig->tableName));
+			
+			$objCSV->saveToFile(sprintf('%s/%s%s.csv',$strStoreDir,
+								$this->replaceInsertTags($objConfig->prependString),
+								$objConfig->tableName));
 		}
 		else
 		{
 			$objCSV->saveToBrowser();
 		}
-
+		
 		if ($this->Input->get('return'))
 		{
-			$this->redirect('contao/main.php?do=' . $this->Input->get('return'));
+			$this->redirect('contao/main.php?do='.$this->Input->get('return'));
 		}
 		else
 		{
 			$this->redirect('contao/main.php?do=dataexchange_config');
 		}
 	}
-
-
+	
+	
 	/**
 	 * Get a result set with field config and value
 	 * @param Database_Result
@@ -138,23 +142,23 @@ class DataExchange extends Backend
 		$arrWhere = array();
 		$arrValues = array();
 		$arrFields = array();
-
+		
 		$session = $this->Session->getData();
-		$filter = ($GLOBALS['TL_DCA'][$objConfig->tableName]['list']['sorting']['mode'] == 4) ? $objConfig->tableName . '_' . CURRENT_ID : $objConfig->tableName;
-
+		$filter = ($GLOBALS['TL_DCA'][$objConfig->tableName]['list']['sorting']['mode'] == 4) ? $objConfig->tableName.'_'.CURRENT_ID : $objConfig->tableName;
+		
 		if ($objConfig->sqlWhere != '')
 		{
 			$arrWhere[] = $objConfig->sqlWhere;
 		}
-
+		
 		$objFields = $this->Database->prepare("SELECT * FROM tl_dataexchange_fields WHERE pid=? AND enabled=1 ORDER BY sorting")
-			->execute($objConfig->id);
+									->execute($objConfig->id);
 
-		while ($objFields->next())
+		while( $objFields->next() )
 		{
 			$arrFields[$objFields->id] = $objFields->row();
 			$arrQuery[] = ($objFields->fieldQuery == '' ? $objFields->dcaField : $objFields->fieldQuery) . ' AS `' . $objFields->id . '`';
-
+			
 			if ($objFields->useFilter && $session['filter'][$objConfig->tableName][$objFields->dcaField] != '')
 			{
 				$field = $objFields->dcaField;
@@ -201,7 +205,7 @@ class DataExchange extends Backend
 				}
 			}
 		}
-
+		
 		if ($objConfig->sqlOrderBy != '')
 		{
 			$strOrderBy = ' ORDER BY ' . $objConfig->sqlOrderBy;
@@ -209,28 +213,29 @@ class DataExchange extends Backend
 		else
 		{
 			$strOrderBy = '';
-		}
+		} 
 
 		$arrResult = array();
 		$objResult = $this->Database->prepare("SELECT " . implode(', ', $arrQuery) . " FROM " . $objConfig->tableName . (empty($arrWhere) ? '' : ' WHERE ' . implode(' AND ', $arrWhere)) . $strOrderBy)->execute($arrValues);
-
-		while ($objResult->next())
+		
+		
+		while( $objResult->next() )
 		{
 			$arrRow = array();
-
-			foreach ($objResult->row() as $id => $value)
+			
+			foreach( $objResult->row() as $id => $value )
 			{
 				$arrRow[$id] = $arrFields[$id];
 				$arrRow[$id]['value'] = $value;
 			}
-
+			
 			$arrResult[] = $arrRow;
 		}
-
+		
 		return $arrResult;
 	}
-
-
+	
+	
 	/**
 	 * Format value (based on DC_Table::show(), Contao 2.9.0)
 	 * @param string
@@ -241,7 +246,7 @@ class DataExchange extends Backend
 	public function formatValue($strTable, $strField, $varValue)
 	{
 		$varValue = deserialize($varValue);
-
+		
 		// Decrypt the value
 		if ($GLOBALS['TL_DCA'][$strTable]['fields'][$strField]['eval']['encrypt'])
 		{
@@ -340,17 +345,17 @@ class DataExchange extends Backend
 	{
 		$arrOperations = array();
 		$objDBExport = $this->Database->prepare("SELECT * FROM tl_dataexchange_config WHERE tableName=? AND addExportInDCA='1'")->execute($strName);
-
+		
 		while ($objDBExport->next())
 		{
-			$arrOperations['export_' . $objDBExport->id] = array
+			$arrOperations['export_'.$objDBExport->id] = array
 			(
-				'label' => $objDBExport->name,
-				'href' => 'do=dataexchange_config&amp;key=export&amp;id=' . $objDBExport->id . '&amp;return=' . $this->Input->get('do'),
-				'class' => 'dataexchange header_dataexchange_' . $objDBExport->exportType . ' dataexchange_' . standardize($objDBExport->name),
+				'label'		=> $objDBExport->name,
+				'href'		=> 'do=dataexchange_config&amp;key=export&amp;id='.$objDBExport->id.'&amp;return='.$this->Input->get('do'),				
+				'class'		=> 'dataexchange header_dataexchange_' . $objDBExport->exportType . ' dataexchange_'.standardize($objDBExport->name),
 			);
 		}
-
+		
 		if (!empty($arrOperations))
 		{
 			array_insert($GLOBALS['TL_DCA'][$objDBExport->tableName]['list']['global_operations'], 0, $arrOperations);
